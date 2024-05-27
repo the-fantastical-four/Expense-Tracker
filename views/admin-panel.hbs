@@ -1,0 +1,14 @@
+<link rel="stylesheet" href="css/homestyle.css">
+<script src="scripts/indexscript.js"></script>
+
+<section>
+
+    <span id="account-section">Accounts</span>
+
+    <div id="bottomsection">
+        {{!-- This is where all entries will go --}}
+        {{#each account-entry}}
+        {{> account-entry this}}
+        {{/each}}
+    </div>
+</section>
