@@ -26,9 +26,7 @@ exports.registerUser = (req, res) => {
           const newUser = {
             username,
             email,
-            password: hashed,
-            budgetGoal: 0,
-            savingsGoal: 0
+            password: hashed
           };
 
           userModel.create(newUser, (err, user) => {
@@ -119,71 +117,4 @@ exports.viewAccount = function (req, res) {
       username: data.username
     });
   });
-}
-
-exports.editAccount = function (req, res) {
-  userModel.getById(req.session.user, function (err, data) {
-    res.render("edit-account", {
-      layout: "no-new-entry",
-      email: data.email,
-      username: data.username
-    });
-  });
-}
-
-exports.confirmEditAccount = function(req, res) {
-  const errors = validationResult(req);
-
-  console.log(errors);
-
-  if(errors.isEmpty()) {
-    var userEdits = {
-      email: req.body.email,
-      username: req.body.username
-    }
-
-    userModel.editUser({ _id: ObjectId(req.session.user) }, { $set: userEdits }, function (results) {
-      req.session.email = results.email;
-      req.session.username = results.username;
-      res.redirect('/account');
-    });
-  }
-  else {
-    const messages = errors.array().map((item) => item.msg);
-
-    res.status(200).send(messages.join(' '));
-  }
-}
-
-exports.deleteAccount = function (req, res) {
-  userModel.deleteUser(req.session.user, function() {
-    postModel.deleteMany(req.session.user, function() {
-      res.redirect('/logout');
-    })
-  });
-}
-
-exports.getGoals = function(req, res) {
-  userModel.getById(req.session.user, function(err, result) {
-    res.status(200).send(result);
-    console.log(result);
-  })
-}
-
-exports.confirmEditBudget = function(req, res) {
-  var edits = {
-    budgetGoal: req.query.budgetGoal
-  }
-  userModel.editUser({_id: ObjectId(req.session.user)}, {$set: edits}, function(results) {
-    console.log(results);
-  });
-}
-
-exports.confirmEditSavings = function(req, res) {
-  var edits = {
-    savingsGoal: req.query.savingsGoal
-  }
-  userModel.editUser({ _id: ObjectId(req.session.user) }, { $set: edits }, function(results) {
-    console.log(results);
-  })
 }
