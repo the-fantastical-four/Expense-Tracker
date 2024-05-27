@@ -27,7 +27,11 @@ npm install
 ```shell
 npm run server
 ```
-6. Open [http://localhost:3000](http://localhost:3000) on your browser to open the app
+- You can also use this script to run to aid in **testing and debugging**
+```shell
+npm run dev
+``` 
+1. Open [http://localhost:3000](http://localhost:3000) on your browser to open the app
 
 **Note:** .env file was included in repository to aid local setup of app using node
 
