@@ -150,6 +150,7 @@ exports.viewAccount = function (req, res) {
 
 // TODO: Change this to actually render all account information 
 exports.viewAccounts = function (req, res) {
+	// just a dummy
 	entries = {
 		"full-name" : "Dora Explora",
 		"email" : "dora@gmail.com"
