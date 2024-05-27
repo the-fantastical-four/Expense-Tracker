@@ -151,10 +151,22 @@ exports.viewAccount = function (req, res) {
 // TODO: Change this to actually render all account information 
 exports.viewAccounts = function (req, res) {
 	// just a dummy
-	entries = {
-		"full-name" : "Dora Explora",
-		"email" : "dora@gmail.com"
-	}
+	const entries = [{
+			name: "Dora Explora",
+			email: "dora@gmail.com",
+			phone: "09173334444"
+		},
+		{
+			name: "Bob Builder",
+			email: "bob@builder.com",
+			phone: "09171234567"
+		},
+		{
+			name: "Mickey Mouse",
+			email: "mickey@disney.com",
+			phone: "09179876543"
+		}
+	];
 	res.render(
 		"admin-panel", {
 			"account-entry": entries
