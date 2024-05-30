@@ -3,65 +3,81 @@ const {
 } = require("express-validator");
 const userModel = require("../database/models/User");
 const postModel = require("../database/models/Post");
-const {
-	validationResult
-} = require("express-validator");
-const {
-	ObjectId
-} = require("mongodb");
+const { validationResult } = require("express-validator");
+const { ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 
-exports.registerUser = (req, res) => {
+exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
 
 	console.log(errors);
 
 	if (errors.isEmpty()) {
 		const {
-			username,
+			fullName,
 			email,
+			phoneNumber,
+			profilePic, 
 			password
 		} = req.body;
 
-		userModel.getOne({
-				email: email,
-			},
-			(err, result) => {
-				if (result) {
-					console.log(result);
-					//if email already exists: throw error
-					req.flash("error_msg", "User already exists. Please login");
-					res.redirect("/login");
-				} else {
-					//create user
-					const saltRounds = 10;
-					bcrypt.hash(password, saltRounds, (err, hashed) => {
-						const newUser = {
-							username,
-							email,
-							password: hashed,
-						};
-
-						userModel.create(newUser, (err, user) => {
-							if (err) {
-								console.log(err);
-								req.flash(
-									"error_msg",
-									"Could not create user. Please try again"
-								);
-								res.redirect("/signup");
-							} else {
-								req.flash(
-									"success_msg",
-									"You are now registered! Please login"
-								);
-								res.redirect("/login");
-							}
-						});
-					});
-				}
+		try {
+			user = {
+				"full_name" : fullName, 
+				"email" : email,
+				"phone_number" : phoneNumber, 
+				"profile_pic" : profilePic
 			}
-		);
+
+			await userModel.createUser(user);
+
+			req.flash("success_msg", "You are now registered! Please login.");
+			res.redirect("/login");
+		}
+		catch (err) {
+			console.error(err); 
+			req.flash("error_msg", "Could not create user. Please try again.");
+			res.redirect("/signup");
+		}
+		// userModel.getOne({
+		// 		email: email,
+		// 	},
+		// 	(err, result) => {
+		// 		if (result) {
+		// 			console.log(result);
+		// 			//if email already exists: throw error
+		// 			req.flash("error_msg", "User already exists. Please login");
+		// 			res.redirect("/login");
+		// 		} else {
+		// 			//create user
+		// 			const saltRounds = 10;
+		// 			bcrypt.hash(password, saltRounds, (err, hashed) => {
+		// 				const newUser = {
+		// 					username,
+		// 					email,
+		// 					password: hashed,
+		// 				};
+
+		// 				userModel.create(newUser, (err, user) => {
+		// 					if (err) {
+		// 						console.log(err);
+		// 						req.flash(
+		// 							"error_msg",
+		// 							"Could not create user. Please try again"
+		// 						);
+		// 						res.redirect("/signup");
+		// 					} else {
+		// 						req.flash(
+		// 							"success_msg",
+		// 							"You are now registered! Please login"
+		// 						);
+		// 						res.redirect("/login");
+		// 					}
+		// 				});
+		// 			});
+		// 		}
+		// 	}
+		// );
 	} else {
 		const messages = errors.array().map((item) => item.msg);
 

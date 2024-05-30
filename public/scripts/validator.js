@@ -6,7 +6,7 @@ const registerValidation = [
     .isEmail().withMessage("Please provide a valid email address."),
 
     //Username check
-    body('username').not().isEmpty().withMessage("Please provide a username"),
+    body('fullName').not().isEmpty().withMessage("Please provide a name"),
 
     //Password check
     body('password').not().isEmpty().withMessage("Please provide a password"),
