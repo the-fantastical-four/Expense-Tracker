@@ -35,11 +35,6 @@ npm run dev
 
 **Note:** .env file was included in repository to aid local setup of app using node
 
-## Access Sample Data
-Sample data for the app can be accessed through these account credentials
-- username: `mrkrabs`
-- password: `secretformula`
-
 ## Node Packages Used: 
 - express
 - mongodb
