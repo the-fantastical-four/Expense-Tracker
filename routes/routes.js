@@ -14,6 +14,6 @@ router.post('/signup', isPublic, registerValidation, userController.registerUser
 router.post('/login', isPublic, loginValidation, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/account', isPrivate, userController.viewAccount);
-router.get('/admin-panel', isPrivate, userController.viewAccounts);
+router.get('/admin-panel', isPrivate, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
 
 module.exports = router; 

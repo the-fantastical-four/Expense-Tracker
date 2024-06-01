@@ -68,6 +68,21 @@
 
 const supabase = require('../../supabaseClient')
 
+// supabase side auth 
+exports.signUp = async function (email, password) {
+    let { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password
+    })
+
+    if(error) {
+        console.log(error); 
+        throw(error); 
+    }
+
+    return data.user.id; 
+}
+
 exports.createUser = async function (user) {
     const { data, error } = await supabase
         .from('accounts')
@@ -83,4 +98,37 @@ exports.createUser = async function (user) {
             console.log("SUCCESS")
         }
         return data; 
+}
+
+exports.checkEmailExists = async function(email) {
+    const {data, error} = await supabase.rpc('check_email_exists', {
+            email_to_check: email
+        });
+
+    if(error) {
+        console.error(error); 
+    }
+
+    return data; 
+}
+
+exports.signIn = async function (email, password) {
+    let { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    })
+
+    if(error) {
+        console.log(error); 
+        throw(error); 
+    }
+    else {
+        return data; 
+    }
+}
+
+exports.signOut = async function() {
+    let {
+        error
+    } = await supabase.auth.signOut()
 }

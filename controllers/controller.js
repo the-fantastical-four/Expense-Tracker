@@ -5,15 +5,17 @@ const path = require('path');
 const { ObjectId } = require('mongodb');
 
 exports.getAllEntries = function (req, res) {
-	postModel.getAllEntries({ user: req.session.user }, function (entries) {
-		userModel.getById(req.session.user, function(err, result) {
-			res.render("index", { 
-				entry: entries,
-				budgetGoal: result.budgetGoal,
-				savingsGoal: result.savingsGoal
-			});
-		});
-	});
+	// postModel.getAllEntries({ user: req.session.user }, function (entries) {
+	// 	userModel.getById(req.session.user, function(err, result) {
+	// 		res.render("index", { 
+	// 			entry: entries,
+	// 			budgetGoal: result.budgetGoal,
+	// 			savingsGoal: result.savingsGoal
+	// 		});
+	// 	});
+	// });
+
+	res.render("index");
 }
 
 exports.login = function (req, res) {

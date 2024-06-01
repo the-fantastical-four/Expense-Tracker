@@ -1,6 +1,6 @@
 exports.isPrivate = (req, res, next) => {
     // Must be authenticated to go to the next function
-    if (req.session.user) {
+    if (req.session.userId) {
         return next()
     } else {
         res.redirect('/login');
@@ -9,7 +9,7 @@ exports.isPrivate = (req, res, next) => {
 
 exports.isPublic = (req, res, next) => {
     // If authenticated, go to home page
-    if (req.session.user) {
+    if (req.session.userId) {
         res.redirect('/');
     } else {
         return next();

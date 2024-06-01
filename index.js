@@ -39,27 +39,14 @@ app.engine("hbs", exphbs.engine({
     helpers: require(__dirname + '/public/hbs-helpers/helpers.js')
 }));
 
-const pgSession = require('connect-pg-simple')(session);
-const {
-    Pool
-} = require('pg');
-
-const pgPool = new Pool({
-    connectionString: conUrl, // Your Supabase PostgreSQL URL
-});
-
 app.use(session({
     secret: sessionKey,
-    store: new pgSession({
-        pool: pgPool, // Connection pool
-        tableName: 'session' // Table to store sessions
-    }),
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-        secure: false,
-        maxAge: 1000 * 60 * 60 * 24 * 7
-    }
+        secure: false
+    }, // Set to true in production if using HTTPS
+    store: new session.MemoryStore(),
 }));
 
 //FLASH
