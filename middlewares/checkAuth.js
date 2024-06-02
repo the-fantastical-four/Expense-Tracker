@@ -15,3 +15,12 @@ exports.isPublic = (req, res, next) => {
         return next();
     }
 }
+
+exports.isAdmin = (req, res, next) => {
+    if (req.session.role === 'admin') {
+        return next();
+    }
+    else {
+        res.redirect('/');
+    }
+}

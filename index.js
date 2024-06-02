@@ -4,6 +4,7 @@ const exphbs = require('express-handlebars');
 const session = require('express-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
+const MySQLStore = require('express-mysql-session')(session); 
 
 const router = require("./routes/routes")
 
@@ -11,9 +12,13 @@ const app = new express();
 
 const {
     envPort,
-    conUrl, 
+    dbConfig, 
     sessionKey
 } = require('./config');
+
+const mysql = require('mysql2'); 
+const connection = mysql.createConnection(dbConfig); 
+const sessionStore = new MySQLStore({}, connection); 
 
 // init server port
 //const port = 3000; 
@@ -46,7 +51,7 @@ app.use(session({
     cookie: {
         secure: false
     }, // Set to true in production if using HTTPS
-    store: new session.MemoryStore(),
+    store: sessionStore,
 }));
 
 //FLASH
