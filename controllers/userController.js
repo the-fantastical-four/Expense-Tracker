@@ -22,7 +22,6 @@ exports.registerUser = async (req, res) => {
 		try {
 
 			emailExists = await userModel.checkEmailExists(email); 
-			phoneExists = await userModel.checkPhoneExists(phoneNumber); 
 
 			if (emailExists) {
 				console.log('Email already in use.');
@@ -31,13 +30,6 @@ exports.registerUser = async (req, res) => {
 					"Email already in use"
 				);
 				res.redirect("/signup")
-			} else if (phoneExists) {
-				console.log('Phone number already in use.');
-				req.flash(
-					"error_msg",
-					"Phone number already in use"
-				);
-				res.redirect("/signup");
 			} else {
 				id = await userModel.signUp(email, password); // no need to hash password, supabase does it 
 
