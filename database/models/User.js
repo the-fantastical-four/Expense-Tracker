@@ -1,134 +1,106 @@
-// const mongoose = require('mongoose');
-
-// const UserSchema = new mongoose.Schema({
-//     email: {
-//         type: String,
-//         required: true
-//     },
-//     password: {
-//         type: String,
-//         required: true
-//     },
-//     username: {
-//         type: String,
-//         required: true
-//     },
-//     budgetGoal: Number,
-//     savingsGoal: Number
-// });
-
-// const userModel = mongoose.model('User', UserSchema);
-
-// // TODO: Change this to actual query 
-// exports.getAllAccounts = function (obj, next) {
-//     userModel.find(query).lean().exec(function (err, result) {
-//         if (err) throw err;
-//         next(result);
-//     });
-// }
-
-// //Save user given a validated object
-// exports.create = function (obj, next) {
-//     const user = new userModel(obj);
-
-//     user.save(function (err, user) {
-//         next(err, user);
-//     })
-// };
-
-// //Retrieve user based on ID
-// exports.getById = function (id, next) {
-//     userModel.findById(id, function (err, user) {
-//         next(err, user);
-//     })
-// };
-
-// //Retrieve only one user based on query
-// exports.getOne = function (query, next) {
-//     userModel.findOne(query, function (err, user) {
-//         next(err, user);
-//     });
-// };
-
-// exports.deleteUser = function (id, next) {
-//     userModel.findOneAndDelete({
-//         _id: id
-//     }).exec(function (err, result) {
-//         if (err) throw err;
-//         next(result);
-//     });
-// }
-
-// exports.editUser = function (id, edits, next) {
-//     userModel.findByIdAndUpdate(id, edits).exec(function (err, results) {
-//         if (err) throw err;
-//         next(results);
-//     });
-// }
-
 const supabase = require('../../supabaseClient')
+const mysql = require('mysql2/promise'); 
+const { dbConfig } = require('../../config'); 
 
-// supabase side auth 
-exports.signUp = async function (email, password) {
-    let { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password
-    })
+exports.createUser = async function (data) {
+    const connection = await mysql.createConnection(dbConfig);
+    const {
+        email, 
+        password, 
+        full_name, 
+        phone_number, 
+        profile_picture
+    } = data; 
 
-    if(error) {
-        console.log(error); 
-        throw(error); 
+    const sql = 
+        "INSERT INTO " + 
+        "accounts (email, password, full_name, phone_number, profile_picture) " + 
+        "VALUES (?, ?, ?, ?, ?)"; 
+
+    const values = [email, password, full_name, phone_number, profile_picture]; 
+
+    try {
+        const [results] = await connection.query(sql, values); 
+        return [results]; 
     }
-
-    return data.user.id; 
-}
-
-exports.createUser = async function (user) {
-    const { data, error } = await supabase
-        .from('accounts')
-        .insert([user]);
-
-        console.log(user)
-
-        if(error) {
-            console.error('Error inserting data')
-            throw(error); 
-        } 
-        else {
-            console.log("SUCCESS")
-        }
-        return data; 
-}
-
-exports.checkEmailExists = async function(email) {
-    const {data, error} = await supabase.rpc('check_email_exists', {
-            email_to_check: email
-        });
-
-    if(error) {
+    catch(error) {
         console.error(error); 
+        throw error; 
     }
-
-    return data; 
+    finally {
+        await connection.end();
+    }
+    
 }
 
-exports.signIn = async function (email, password) {
-    let { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-    })
+exports.checkEmailExists = async function (email) {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    const sql = 
+        "SELECT COUNT(*) as num " + 
+        "FROM accounts " + 
+        "WHERE email = ?"; 
 
-    if(error) {
+    try {
+        const [results] = await connection.query(sql, email); 
+        console.log(results[0].num);
+        return results[0].num; 
+    }
+    catch(error) {
+        console.error(error); 
+        throw error; 
+    }
+    finally {
+        await connection.end(); 
+    }
+}
+
+exports.getRole = async function(id) {
+    const connection = await mysql.createConnection(dbConfig); 
+
+    try {
+        const [results] = await connection.query('SELECT role FROM roles WHERE user_id = ?', [id]); 
+        return results[0].role; 
+    }
+    catch (error) {
+        console.error(error); 
+        throw error; 
+    }
+    finally {
+        await connection.end; 
+    }
+}
+
+exports.getPass = async function(email) {
+    const connection = await mysql.createConnection(dbConfig); 
+
+    try {
+        const [results] = await connection.query('SELECT password FROM accounts WHERE email = ?', [email]);
+        return results[0].password;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
+
+exports.getAccountId = async function(email) {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    try {
+        const [results] = await connection.query('SELECT user_id FROM accounts WHERE email = ?', [email]); 
+        return results[0].user_id; 
+    }
+    catch(error) {
         console.log(error); 
-        throw(error); 
+        throw error; 
     }
-    else {
-        return data; 
+    finally {
+        await connection.end();
     }
 }
 
-exports.signOut = async function() {
-    let {
-        error
-    } = await supabase.auth.signOut()
+exports.getAllAccounts = async function() {
+    
 }
