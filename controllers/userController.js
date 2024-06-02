@@ -4,6 +4,8 @@ const postModel = require("../database/models/Post");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const { handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/antiBruteForce');
+
 
 exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
@@ -70,7 +72,6 @@ exports.loginUser = async (req, res) => {
 	const errors = validationResult(req);
 
 	try {
-
 		if (errors.isEmpty()) {
 			const {
 				email,
@@ -106,10 +107,12 @@ exports.loginUser = async (req, res) => {
 		}
 	}
 	catch(err) {
+		handleFailedLogin(req.body.email);
 		req.flash("error_msg", "Something happened! Please try again."); 
 		console.error("Could not log in: ", err);
 		res.redirect("/login"); 
 	}
+	
 };
 
 exports.logoutUser = (req, res) => {
