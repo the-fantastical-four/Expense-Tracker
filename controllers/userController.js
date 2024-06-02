@@ -1,69 +1,101 @@
 const { check } = require("express-validator");
 const userModel = require("../database/models/User");
 const postModel = require("../database/models/Post");
+const upload = require('../middlewares/upload');
+const fs = require('fs').promises;
+
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 exports.registerUser = async (req, res) => {
-	const errors = validationResult(req);
+    upload(req, res, async (err) => {
+        if (err) {
+            req.flash('error_msg', err + " Entered here 1");
+            return res.redirect('/signup');
+        }
 
-	console.log(errors);
+        const file = req.file;
+        if (!file) {
+            req.flash('error_msg', 'Please upload a profile picture.');
+            return res.redirect('/signup');
+        }
 
-	if (errors.isEmpty()) {
-		const {
-			fullName,
-			email,
-			phoneNumber,
-			profilePic, 
-			password
-		} = req.body;
+        // Check file signature
+        try {
+            const buffer = await fs.readFile(file.path);
+            const fileSignature = buffer.toString('hex', 0, 4);
 
-		try {
+            // Image file signatures
+            const jpgSignature = 'ffd8ffe0';
+            const gifSignature = '47494638';
+            const pngSignature = '89504e47';
+            const jpegSignature = 'ffd8ffe1';
 
-			emailExists = await userModel.checkEmailExists(email); 
+            if (
+                fileSignature !== jpgSignature &&
+                fileSignature !== gifSignature &&
+                fileSignature !== pngSignature &&
+                fileSignature !== jpegSignature
+            ) {
+                req.flash('error_msg', 'Invalid file type. Please upload a valid image.');
+                await fs.unlink(file.path); // Delete the invalid file
+                return res.redirect('/signup');
+            }
 
-			if (emailExists) {
-				console.log('Email already in use.');
-				req.flash(
-					"error_msg",
-					"Email already in use"
-				);
-				res.redirect("/signup")
-			} else {
+        } catch (fileErr) {
+            req.flash('error_msg', 'Could not process the file. Please try again.' + fileErr);
+            return res.redirect('/signup');
+        }
+		console.log(req.body);
 
-				bcrypt.hash(password, saltRounds, async function(err, hashed) {
-					const user = {
-						"full_name": fullName,
-						"email": email,
-						"password": hashed, 
-						"phone_number": phoneNumber,
-						"profile_picture": profilePic
-					}
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const messages = errors.array().map((item) => item.msg);
+            req.flash("error_msg", messages.join(" "));
+            return res.redirect('/signup');
+        }
 
-					await userModel.createUser(user);
+        const { fullName, email, phoneNumber, password } = req.body;
 
-					req.flash(
-						"success_msg",
-						"You are now registered! Please login"
-					);
-					res.redirect("/login");
-				})
-			}
-		}
-		catch (err) {
-			console.error(err); 
-			req.flash("error_msg", "Could not create user. Please try again.");
-			res.redirect("/signup");
+        try {
+            const emailExists = await userModel.checkEmailExists(email);
 
-			// if fail maybe delete from auth table if new user was inserted 
-		}
-	} else {
-		const messages = errors.array().map((item) => item.msg);
+            if (emailExists) {
+                req.flash("error_msg", "Email already in use");
+                return res.redirect("/signup");
+            }
 
-		req.flash("error_msg", messages.join(" "));
-		res.redirect("/signup");
-	}
+            const saltRounds = 10;
+            bcrypt.hash(password, saltRounds, async (err, hashed) => {
+                if (err) {
+                    req.flash("error_msg", "Could not hash the password. Please try again.");
+                    return res.redirect('/signup');
+                }
+
+                const newUser = {
+                    full_name: fullName,
+                    email: email,
+                    password: hashed,
+                    phone_number: phoneNumber,
+                    profile_picture: file.filename // Store the filename or the path as needed
+                };
+
+                try {
+                    await userModel.createUser(newUser);
+                    req.flash("success_msg", "You are now registered! Please login.");
+                    res.redirect("/login");
+                } catch (createErr) {
+                    req.flash("error_msg", "Could not create user. Please try again.");
+                    res.redirect('/signup');
+                }
+            });
+
+        } catch (err) {
+            req.flash("error_msg", "Could not create user. Please try again.");
+            res.redirect('/signup');
+        }
+    });
 };
 
 exports.loginUser = async (req, res) => {

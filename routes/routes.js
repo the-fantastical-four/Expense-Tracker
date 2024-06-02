@@ -11,6 +11,7 @@ router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
 router.post('/signup', isPublic, registerValidation, userController.registerUser);
+
 router.post('/login', isPublic, loginValidation, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/account', isPrivate, userController.viewAccount);
