@@ -6,12 +6,16 @@ const { isPublic, isPrivate, isAdmin } = require('../middlewares/checkAuth.js');
 const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
 
+//anti-brute-force middleware
+const { antiBruteForce, handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/antiBruteForce');
+
+
 // ROUTES
 router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
 router.post('/signup', isPublic, registerValidation, userController.registerUser);
-router.post('/login', isPublic, loginValidation, userController.loginUser);
+router.post('/login', isPublic, loginValidation, antiBruteForce, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/account', isPrivate, userController.viewAccount);
 router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
