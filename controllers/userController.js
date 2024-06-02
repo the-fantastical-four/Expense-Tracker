@@ -69,38 +69,6 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-	/*
-	const errors = validationResult(req);
-
-	if (!errors.isEmpty()) {
-		const messages = errors.array().map((item) => item.msg);
-		req.flash("error_msg", messages.join(" "));
-		return res.redirect("/login");
-	}
-
-	const { email, password } = req.body;
-
-	try {
-		const data = await userModel.signIn(email, password);
-
-		if (!data) {
-			handleFailedLogin(email);
-			req.flash("error_msg", "Invalid email or password.");
-			return res.redirect("/login");
-		}
-
-		req.session.userId = data.user.id; 
-		// Add check here for role to set if with admin permissions 
-
-		handleSuccessfulLogin(email);
-		res.redirect("/");
-	} catch (err) {
-		handleFailedLogin(email);
-		req.flash("error_msg", "Something happened! Please try again."); 
-		console.log("Could not log in: ", err);
-		res.redirect("/login"); 
-	}*/
-
 	const errors = validationResult(req);
 
 	try {
