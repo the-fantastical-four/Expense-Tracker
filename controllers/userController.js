@@ -10,8 +10,6 @@ const { handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/ant
 exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
 
-	console.log(errors);
-
 	if (errors.isEmpty()) {
 		const {
 			fullName,
@@ -34,13 +32,24 @@ exports.registerUser = async (req, res) => {
 				res.redirect("/signup")
 			} else {
 
+				let filePath = ''
+
+				if (req.file) {
+					filePath = req.file.path;
+
+					// Process and store the file path and other data as needed
+					console.log(`File uploaded successfully! File Path: ${filePath}`);
+				} else {
+					console.error('Error: No file uploaded');
+				}
+
 				bcrypt.hash(password, saltRounds, async function(err, hashed) {
 					const user = {
 						"full_name": fullName,
 						"email": email,
 						"password": hashed, 
 						"phone_number": phoneNumber,
-						"profile_picture": profilePic
+						"profile_picture": filePath
 					}
 
 					await userModel.createUser(user);
