@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {registerValidation, loginValidation, editAccountValidation} = require('../public/scripts/validator.js');
 const { isPublic, isPrivate, isAdmin } = require('../middlewares/checkAuth.js');
-const upload = require('../middlewares/multerConfig.js');
+const { upload } = require('../middlewares/multerConfig.js');
 
 // importing controller
 const controller = require("../controllers/controller");
