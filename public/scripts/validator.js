@@ -34,7 +34,7 @@ const registerValidation = [
 const loginValidation = [
     // Email should not be empty and must be a valid email
     body('email').not().isEmpty().withMessage("Email is required."),
-    // Password should not be empty and needs to be min 6 chars
+    // Password should not be empty
     body('password').not().isEmpty().withMessage("Password is required.")
 ];
 

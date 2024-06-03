@@ -106,10 +106,10 @@ exports.loginUser = async (req, res) => {
 				password
 			} = req.body;
 
-			encrypted = await userModel.getPass(email); 
+			const encrypted = await userModel.getPass(email); 
 
 			if (encrypted) {
-				await bcrypt.compare(password, encrypted, async function (err, result) {
+				bcrypt.compare(password, encrypted, async (err, result) => {
 					if (result) {
 						const id = await userModel.getAccountId(email);
 						req.session.userId = id;
@@ -117,11 +117,15 @@ exports.loginUser = async (req, res) => {
 						const role = await userModel.getRole(id);
 						req.session.role = role;
 
+						handleSuccessfulLogin(email);
+
 						console.log("Log in success")
 						res.redirect("/")
 					}
 					else {
-						throw err;
+						handleFailedLogin(email);
+						req.flash("error_msg", "Something happened! Please try again.");
+						return res.redirect("/login");
 					}
 				});
 			} else {
@@ -140,7 +144,6 @@ exports.loginUser = async (req, res) => {
 		console.error("Could not log in: ", err);
 		res.redirect("/login"); 
 	}
-	
 };
 
 exports.logoutUser = (req, res) => {
