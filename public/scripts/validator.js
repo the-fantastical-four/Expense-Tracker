@@ -9,7 +9,11 @@ const registerValidation = [
 
 
     //Username check
-    body('fullName').not().isEmpty().withMessage("Please provide a name"),
+    body('fullName').not().isEmpty().withMessage("Please provide a name")
+    .matches(/^[A-Za-z ]+$/).withMessage("Full name can only contain alphabetic characters and spaces."),
+
+    body('phoneNumber').not().isEmpty().withMessage("Please provide a phone number")
+    .matches(/^\+?[0-9]\d{1,14}$/).withMessage("Please provide a valid phone number"),
 
     //Password check
     body('password')
