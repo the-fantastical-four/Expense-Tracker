@@ -5,12 +5,11 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/antiBruteForce');
+const { checkIfImage } = require('../middlewares/multerConfig')
 
 
 exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
-
-	console.log(errors);
 
 	if (errors.isEmpty()) {
 		const {
@@ -31,16 +30,45 @@ exports.registerUser = async (req, res) => {
 					"error_msg",
 					"Email already in use"
 				);
-				res.redirect("/signup")
+				return res.redirect("/signup")
 			} else {
 
+				// check uploaded image first 
+				let filePath = ''
+
+				if (req.file) {
+					filePath = req.file.path;
+					
+					if(!checkIfImage(filePath)) {
+						// TODO: add delete file here 
+						req.flash(
+							"error_msg", 
+							"Please upload a supported image"
+						);
+						return res.redirect('/signup');
+					}
+				} else { 
+					console.error('Error: No file uploaded');
+					req.flash(
+						"error_msg",
+						"Please upload an image"
+					);
+					return res.redirect('/signup');
+				}
+
 				bcrypt.hash(password, saltRounds, async function(err, hashed) {
+					if (err) {
+						console.error(err);
+						req.flash("error_msg", "Could not create user. Please try again.");
+						return res.redirect("/signup"); // Return here to prevent further execution
+					}
+
 					const user = {
 						"full_name": fullName,
 						"email": email,
 						"password": hashed, 
 						"phone_number": phoneNumber,
-						"profile_picture": profilePic
+						"profile_picture": filePath
 					}
 
 					await userModel.createUser(user);
@@ -49,14 +77,14 @@ exports.registerUser = async (req, res) => {
 						"success_msg",
 						"You are now registered! Please login"
 					);
-					res.redirect("/login");
+					return res.redirect("/login");
 				})
 			}
 		}
 		catch (err) {
 			console.error(err); 
 			req.flash("error_msg", "Could not create user. Please try again.");
-			res.redirect("/signup");
+			return res.redirect("/signup");
 
 			// if fail maybe delete from auth table if new user was inserted 
 		}
@@ -64,7 +92,7 @@ exports.registerUser = async (req, res) => {
 		const messages = errors.array().map((item) => item.msg);
 
 		req.flash("error_msg", messages.join(" "));
-		res.redirect("/signup");
+		return res.redirect("/signup");
 	}
 };
 
@@ -103,7 +131,7 @@ exports.loginUser = async (req, res) => {
 			}
 		}
 		else {
-			console.log(errors); 
+			console.error(errors); 
 		}
 	}
 	catch(err) {

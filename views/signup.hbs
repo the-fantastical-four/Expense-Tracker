@@ -6,19 +6,19 @@
     <h1>Register a new Account</h1>
 
     <div id="signupform">
-        <form action = "/signup" method="post">
+        <form action = "/signup" method="post" enctype="multipart/form-data">
             <label>Email</label>
             <input name="email" id="email" type="text"><br>
             <label>Full Name</label>
             <input name="fullName" id="fullName" type="text"><br>
             <label>Phone Number</label>
             <input name="phoneNumber" id="phoneNumber" type="text"><br>
-            <label>Profile Pic</label>
-            <input name="profilePic" id="profilePic" type="text"><br>
             <label>Password</label>
             <input name="password" id="password" type="password"><br>
             <label>Confirm Password</label>
             <input name="confirmPass" id="confirmPass" type="password"><br>
+            <label for="image">Profile Picture</label>
+            <input type="file" name="profPic" id="profPic" required><br>
 
             <p id="login">Already have an account? Click here to <a href="/login">Log in</a>!</p>
             <br>
