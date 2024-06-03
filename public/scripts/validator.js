@@ -37,8 +37,6 @@ const loginValidation = [
     // Password should not be empty
     body('password')
         .not().isEmpty().withMessage("Password is required.")
-        .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{12,64}$/)
-        .withMessage('Password must be 12-64 characters long and include uppercase, lowercase, number, and special character.')
 ];
 
 const editAccountValidation = [
