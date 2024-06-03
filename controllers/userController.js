@@ -112,8 +112,10 @@ exports.loginUser = async (req, res) => {
 	}
 	catch(err) {
 		handleFailedLogin(req.body.email);
+		req.flash("error_msg", "Something happened! Please try again."); 
+		console.error("Could not log in: ", err);
+		res.redirect("/login"); 
 	}
-	
 };
 
 exports.logoutUser = (req, res) => {

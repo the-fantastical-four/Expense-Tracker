@@ -11,5 +11,7 @@
     <a href="/account">view accounts</a>
     <a href="/logout">sign out</a>
     {{!-- TODO: Hide admin panel when not in admin account --}}
-    <a href="/admin-panel">admin panel</a>
+    {{#if isAdmin}}
+        <a href="/admin-panel">admin panel</a>
+    {{/if}}
 </div>

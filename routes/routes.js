@@ -11,6 +11,11 @@ const { antiBruteForce, handleFailedLogin, handleSuccessfulLogin } = require('..
 
 
 // ROUTES
+router.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.userId !== undefined;
+    res.locals.isAdmin = req.session.role === 'admin';
+    next();
+});
 router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
