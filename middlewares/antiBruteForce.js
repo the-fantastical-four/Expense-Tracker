@@ -16,9 +16,7 @@ function antiBruteForce(req, res, next) {
     const user = users.get(email);
 
     if (user.lockUntil > now) {
-        //return res.status(429).json({ message: 'Too many failed login attempts. Please try again later.' });
         req.flash("error_msg", "Too many failed login attempts. Please try again later.");
-        //req.flash("lock_time_remaining", lockTimeRemaining);
         return res.redirect('/login');
     }
 
@@ -34,7 +32,6 @@ function handleFailedLogin(email) {
     if (user.attempts >= MAX_ATTEMPTS) {
         user.lockUntil = now + LOCK_TIME;
         user.attempts = 0;
-        //sendLockoutEmail(email);
     }
 
     users.set(email, user);
