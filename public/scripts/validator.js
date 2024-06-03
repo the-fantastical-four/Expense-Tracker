@@ -29,16 +29,9 @@ const registerValidation = [
 
 const loginValidation = [
     // Email should not be empty and must be a valid email
-    body('email')
-        .not().isEmpty().withMessage("Email is required.")
-        .matches(/^[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/)
-        .withMessage('Invalid email format.'),
-
-    // Password should not be empty
-    body('password')
-        .not().isEmpty().withMessage("Password is required.")
-        .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{12,64}$/)
-        .withMessage('Password must be 12-64 characters long and include uppercase, lowercase, number, and special character.')
+    body('email').not().isEmpty().withMessage("Email is required."),
+    // Password should not be empty and needs to be min 6 chars
+    body('password').not().isEmpty().withMessage("Password is required.")
 ];
 
 const editAccountValidation = [
