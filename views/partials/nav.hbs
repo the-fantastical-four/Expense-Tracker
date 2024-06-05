@@ -8,10 +8,8 @@
 <div id="menubar">
     <a onclick="closeNav()" class="closebtn">x</a>
     <a href="/">home</a>
-    <a href="/account">view accounts</a>
-    <a href="/logout">sign out</a>
-    {{!-- TODO: Hide admin panel when not in admin account --}}
     {{#if isAdmin}}
         <a href="/admin-panel">admin panel</a>
     {{/if}}
+    <a href="/logout">sign out</a>
 </div>
