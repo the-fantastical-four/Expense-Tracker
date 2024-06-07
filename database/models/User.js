@@ -102,5 +102,15 @@ exports.getAccountId = async function(email) {
 }
 
 exports.getAllAccounts = async function() {
-    
+    const connection = await mysql.createConnection(dbConfig);
+
+    try {
+        const [results] = await connection.query('SELECT * FROM accounts');
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
 }
