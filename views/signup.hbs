@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/css/signupstyle.css">
-
+<script src="/scripts/captcha.js"></script>
 <title>Sign Up</title>
 
 <div id="signupbox">
@@ -43,16 +43,3 @@
         {{> messages}}
     </div>
 </div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const captchaImage = document.getElementById('captchaImage');
-    const refreshButton = document.getElementById('refreshCaptcha');
-
-    refreshButton.addEventListener('click', function() {
-        captchaImage.src = '/captcha?' + Date.now(); // Prevent caching
-    });
-});
-
-
-</script>
