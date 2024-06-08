@@ -12,8 +12,8 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 1000000
-    }, // 1MB limit
+        fileSize: 25000000
+    }, // 25MB limit
 }).single('profPic');
 
 const checkIfImage = (filePath) => {

@@ -63,12 +63,14 @@ exports.registerUser = async (req, res) => {
 						return res.redirect("/signup"); // Return here to prevent further execution
 					}
 
+					updatedPath = filePath.replace(/^public\\/, "");
+
 					const user = {
 						"full_name": fullName,
 						"email": email,
 						"password": hashed, 
 						"phone_number": phoneNumber,
-						"profile_picture": filePath
+						"profile_picture": updatedPath
 					}
 
 					await userModel.createUser(user);
@@ -158,10 +160,6 @@ exports.logoutUser = (req, res) => {
 	else {
 		res.redirect('/login'); 
 	}
-};
-
-exports.viewAccount = function (req, res) {
-	
 };
 
 // TODO: Change this to actually render all account information 
