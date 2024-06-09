@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/css/signupstyle.css">
+<script src="/scripts/captcha.js"></script>
 
 <title>Sign Up</title>
 
@@ -20,6 +21,18 @@
             <label for="image">Profile Picture</label>
             <input type="file" name="profPic" id="profPic" required><br>
 
+            <label>Captcha</label><br>
+            <div style="display: inline-block;">
+                <div class="captcha-container" style="display: inline-block; border-radius: 10px; border: 1px solid var(--primary-color);">
+                <img id="captchaImage" src="/captcha" alt="CAPTCHA">
+                </div>
+                <button type="button" id="refreshCaptcha" style="font-size: 10pt; margin-top:-45px;">Refresh CAPTCHA</button>
+            </div>
+
+
+            <input type="text" id="captchaInput" name="captcha" placeholder="Enter CAPTCHA" required="true">
+
+            <br><br>
             <p id="login">Already have an account? Click here to <a href="/login">Log in</a>!</p>
             <br>
             <button id="signupbutton" type="submit">Sign Up</button>
