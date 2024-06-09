@@ -8,12 +8,11 @@ const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
 
 //anti-brute-force middleware
-const { antiBruteForce, handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/antiBruteForce');
+const { antiBruteForce, handleFailedLogin, handleSuccessfulLogin, isBlacklisted } = require('../middlewares/antiBruteForce');
 
 
 // ROUTES
 router.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.userId !== undefined;
     res.locals.isAdmin = req.session.role === 'admin';
     next();
 });
@@ -22,7 +21,7 @@ router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
 router.post('/signup', isPublic, upload, registerValidation, userController.registerUser);
-router.post('/login', isPublic, loginValidation, antiBruteForce, userController.loginUser);
+router.post('/login', isPublic, loginValidation, isBlacklisted, antiBruteForce, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
 

@@ -125,8 +125,8 @@ exports.loginUser = async (req, res) => {
 						res.redirect("/")
 					}
 					else {
-						handleFailedLogin(email);
-						req.flash("error_msg", "Something happened! Please try again.");
+						handleFailedLogin(email, req, res);
+						req.flash("error_msg", "Login credentials don't match");
 						return res.redirect("/login");
 					}
 				});
