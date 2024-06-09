@@ -42,8 +42,7 @@ exports.checkEmailExists = async function (email) {
         "WHERE email = ?"; 
 
     try {
-        const [results] = await connection.query(sql, email); 
-        console.log(results[0].num);
+        const [results] = await connection.query(sql, [email]); 
         return results[0].num; 
     }
     catch(error) {
@@ -76,7 +75,9 @@ exports.getPass = async function(email) {
 
     try {
         const [results] = await connection.query('SELECT password FROM accounts WHERE email = ?', [email]);
-        return results[0].password;
+        if(results[0]) {
+            return results[0].password;
+        }
     } catch (error) {
         console.error(error);
         throw error;
@@ -109,6 +110,46 @@ exports.getAllAccounts = async function() {
         return results;
     } catch (error) {
         console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
+
+exports.blacklistIp = async function(ipAddress) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const sql =
+        "INSERT INTO " +
+        "blacklist (ip) " +
+        "VALUES (?)";
+
+    const values = [ipAddress];
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return results[0];
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
+
+exports.isBlacklisted = async function(ipAddress) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const sql =
+        "SELECT COUNT(*) as num " +
+        "FROM blacklist " +
+        "WHERE ip = ?";
+
+    try {
+        const [results] = await connection.query(sql, [ipAddress]);
+        return results[0].num;
+    } catch (error) {
+        console.error(error);
         throw error;
     } finally {
         await connection.end();
