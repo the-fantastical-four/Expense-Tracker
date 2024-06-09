@@ -30,7 +30,7 @@ router.get('/captcha', (req, res) => {
 router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
-router.post('/signup', isPublic, trackFailedAttempts, upload, registerValidation, validateCaptcha, userController.registerUser);
+router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, registerValidation, validateCaptcha, userController.registerUser);
 router.post('/login', isPublic, loginValidation, isBlacklisted, antiBruteForce, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
