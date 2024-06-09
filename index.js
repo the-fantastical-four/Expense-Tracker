@@ -5,6 +5,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const MySQLStore = require('express-mysql-session')(session); 
+const svgCaptcha = require('svg-captcha');
 
 const router = require("./routes/routes")
 

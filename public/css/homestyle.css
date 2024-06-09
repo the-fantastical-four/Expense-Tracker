@@ -157,3 +157,14 @@ section {
     transition: 0.5s;
 }
 
+.profilePic > img {
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    width: 100%; /* Adjust the width as needed */
+    height: 100%; /* Adjust the height to maintain the aspect ratio */
+    padding: 10px; /* Example padding */
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 20% 80%; /* Two equal columns */
+}

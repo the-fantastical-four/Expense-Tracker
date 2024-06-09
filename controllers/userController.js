@@ -63,12 +63,14 @@ exports.registerUser = async (req, res) => {
 						return res.redirect("/signup"); // Return here to prevent further execution
 					}
 
+					updatedPath = filePath.replace(/^public\\/, "");
+
 					const user = {
 						"full_name": fullName,
 						"email": email,
 						"password": hashed, 
 						"phone_number": phoneNumber,
-						"profile_picture": filePath
+						"profile_picture": updatedPath
 					}
 
 					await userModel.createUser(user);
@@ -123,8 +125,8 @@ exports.loginUser = async (req, res) => {
 						res.redirect("/")
 					}
 					else {
-						handleFailedLogin(email);
-						req.flash("error_msg", "Something happened! Please try again.");
+						handleFailedLogin(email, req, res);
+						req.flash("error_msg", "Login credentials don't match");
 						return res.redirect("/login");
 					}
 				});
@@ -158,10 +160,6 @@ exports.logoutUser = (req, res) => {
 	else {
 		res.redirect('/login'); 
 	}
-};
-
-exports.viewAccount = function (req, res) {
-	
 };
 
 // TODO: Change this to actually render all account information 
