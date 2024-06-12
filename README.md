@@ -6,6 +6,11 @@
 - Garcia, Lauren
 - Oquias, Sophia
 
+## Preqrequisits 
+**To run this you will need the following** 
+- Node.js (preferrably v16)
+- MySQL Server
+
 ## Installation Instructions 
 **To run locally:** 
 1. Fork this repository (or skip to step 2 and clone right away)
@@ -21,7 +26,17 @@ cd Expense-Tracker
 ```shell
 npm install
 ```
-5. Run the server using the script defined as 
+5. Set up the schema script in mysql
+6. Create a `.env` file and fill-out the necessary information according to your mysql server set up
+```
+PORT=3000
+HOST="localhost"
+USER="<your user>"
+PASSWORD="<your pass>"
+DATABASE="accountdb"
+SESSION_KEY="<your session key>"
+```
+7. Run the server using the script defined as 
 ```shell
 npm run server
 ```
