@@ -16,6 +16,18 @@ const upload = multer({
     }, // 25MB limit
 }).single('profPic');
 
+function multerErrorHandler(err, req, res, next) {
+    if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            req.flash('error_msg', 'File too large. Maximum size is 25MB')
+            return res.redirect('/signup');
+        }
+        return res.status(400).send(err.message);
+    }
+    // Pass the error to the next error handler if it's not a multer error
+    next(err);
+}
+
 const checkIfImage = (filePath) => {
     // Define magic numbers for different image formats
     const magicNumbers = {
@@ -39,4 +51,4 @@ const checkIfImage = (filePath) => {
     return fileType !== undefined;
 };
 
-module.exports = { upload, checkIfImage };
+module.exports = { upload, checkIfImage, multerErrorHandler };

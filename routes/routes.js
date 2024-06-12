@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {registerValidation, loginValidation, editAccountValidation} = require('../public/scripts/validator.js');
 const { isPublic, isPrivate, isAdmin } = require('../middlewares/checkAuth.js');
-const { upload } = require('../middlewares/multerConfig.js');
+const { upload, multerErrorHandler } = require('../middlewares/multerConfig.js');
 const svgCaptcha = require('svg-captcha');
 const { validateCaptcha, trackFailedAttempts } = require('../middlewares/validateCaptcha.js');
 
@@ -33,7 +33,7 @@ router.get('/captcha', (req, res) => {
 router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
-router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, registerValidation, validateCaptcha, userController.registerUser);
+router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, multerErrorHandler, registerValidation, validateCaptcha, userController.registerUser);
 router.post('/login', isPublic, loginValidation, isBlacklisted, antiBruteForce, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
