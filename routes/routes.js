@@ -17,6 +17,9 @@ const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce
 // ROUTES
 router.use((req, res, next) => {
     res.locals.isAdmin = req.session.role === 'admin';
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     next();
 });
 
