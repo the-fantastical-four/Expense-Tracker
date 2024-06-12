@@ -11,11 +11,11 @@
 1. Fork this repository (or skip to step 2 and clone right away)
 2. Clone the forked repository 
 ```shell
-git clone <link to your forked repository>
+git clone https://github.com/the-fantastical-four/Expense-Tracker.git
 ```
 3. Navigate to the directory
 ```shell
-cd CCAPDEV_MP
+cd Expense-Tracker
 ```
 4. Install all dependencies in `package.json` 
 ```shell
