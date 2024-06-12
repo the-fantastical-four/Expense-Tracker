@@ -1,7 +1,11 @@
 const router = require('express').Router();
 const {registerValidation, loginValidation, editAccountValidation} = require('../public/scripts/validator.js');
 const { isPublic, isPrivate, isAdmin } = require('../middlewares/checkAuth.js');
+<<<<<<< HEAD
 const { upload, multerErrorHandler } = require('../middlewares/multerConfig.js');
+=======
+const { upload } = require('../middlewares/multerConfig.js');
+>>>>>>> 59b45fd6a42f219974bbf4bc5f3b17ae33445195
 const svgCaptcha = require('svg-captcha');
 const { validateCaptcha, trackFailedAttempts } = require('../middlewares/validateCaptcha.js');
 
