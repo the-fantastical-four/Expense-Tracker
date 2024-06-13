@@ -31,8 +31,8 @@ npm install
 ```
 PORT=3000
 HOST="localhost"
-USER="<your user>"
-PASSWORD="<your pass>"
+DB_USER="<your user>"
+DB_PASSWORD="<your pass>"
 DATABASE="accountdb"
 SESSION_KEY="<your session key>"
 ```
