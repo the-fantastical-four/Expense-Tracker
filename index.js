@@ -5,7 +5,6 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const MySQLStore = require('express-mysql-session')(session); 
-const svgCaptcha = require('svg-captcha');
 
 const router = require("./routes/routes")
 
@@ -35,7 +34,7 @@ const options = {
 
 // Initialize data and static folder 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })) // might change later
+app.use(express.urlencoded({ extended: true })) 
 app.use(express.static(__dirname + "/public")); // place all html, js, css for the pages here
 
 // using handlebars 

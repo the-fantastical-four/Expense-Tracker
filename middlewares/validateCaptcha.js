@@ -41,7 +41,7 @@ function trackFailedAttempts(req, res, next) {
             req.session.lockedOut = false;
             req.session.lockoutTime = null;
         } else {
-            // User is still locked out, redirect to signup page with error message
+            // User is still locked out
             req.flash('error_msg', 'You are currently locked out. Please try again later.');
             return res.redirect('/signup');
         }

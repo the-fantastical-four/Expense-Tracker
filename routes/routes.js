@@ -4,13 +4,9 @@ const { isPublic, isPrivate, isAdmin } = require('../middlewares/checkAuth.js');
 const { upload, multerErrorHandler } = require('../middlewares/multerConfig.js');
 const svgCaptcha = require('svg-captcha');
 const { validateCaptcha, trackFailedAttempts } = require('../middlewares/validateCaptcha.js');
-
-
-// importing controller
 const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
 
-//anti-brute-force middleware
 const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce');
 
 

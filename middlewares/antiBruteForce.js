@@ -1,5 +1,4 @@
-const nodemailer = require('nodemailer');
-const users = new Map();  // This is a simple in-memory store. In production, use a persistent database.
+const users = new Map();  
 
 const MAX_ATTEMPTS = 3;
 const LOCK_TIME = 60 * 1000;  // 1 minute in milliseconds
