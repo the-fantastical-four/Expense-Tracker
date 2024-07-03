@@ -19,6 +19,17 @@ exports.getAllEntries = async function (req, res) {
 	}
 }
 
+exports.getEntry = async function (req, res) {
+	try {
+		[entry] = await postModel.getById(req.query.id);
+		res.render("view-entry", entry)
+	}
+	catch(error) {
+		console.log("Could not retrieve entry: ", error); 
+		res.redirect("/");
+	}
+}
+
 exports.login = function (req, res) {
 	res.render("login", { layout: "login-layout" });
 }

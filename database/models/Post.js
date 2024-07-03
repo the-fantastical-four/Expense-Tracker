@@ -49,12 +49,19 @@ exports.createEntry = async function(entry) {
     }
 }
 
-// exports.getById = function(id, next) {
-//     postModel.findById(id).lean().exec(function(err, result) {
-//         if(err) throw err; 
-//         next(result); 
-//     });
-// }
+exports.getById = async function(postId) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    try {
+        const [results] = await connection.query('SELECT * FROM posts WHERE post_id = ?', [postId]);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
 
 // exports.deleteEntry = function(id, next) {
 //     postModel.deleteOne({ _id: id }).exec(function(err, result) {

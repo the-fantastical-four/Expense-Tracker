@@ -35,5 +35,6 @@ router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
 router.get('/new-entry', isPrivate, controller.newEntry); 
 router.post('/add-entry', isPrivate, controller.addEntry); 
+router.get('/view/entry', isPrivate, controller.getEntry);  
 
 module.exports = router; 
