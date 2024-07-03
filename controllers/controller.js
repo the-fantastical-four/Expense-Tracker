@@ -4,18 +4,19 @@ const userModel = require("../database/models/User")
 const path = require('path');
 const { ObjectId } = require('mongodb');
 
-exports.getAllEntries = function (req, res) {
-	// postModel.getAllEntries({ user: req.session.user }, function (entries) {
-	// 	userModel.getById(req.session.user, function(err, result) {
-	// 		res.render("index", { 
-	// 			entry: entries,
-	// 			budgetGoal: result.budgetGoal,
-	// 			savingsGoal: result.savingsGoal
-	// 		});
-	// 	});
-	// });
+exports.getAllEntries = async function (req, res) {
 
-	res.render("index");
+	try {
+		entries = await postModel.getAllEntries(req.session.userId);
+
+		res.render("index", {
+			entry: entries
+		});
+	}
+	catch(error) {
+		console.log("Could not retrieve entries: ", error); 
+		res.redirect("/")
+	}
 }
 
 exports.login = function (req, res) {
@@ -24,4 +25,32 @@ exports.login = function (req, res) {
 
 exports.signup = function (req, res) {
 	res.render("signup", { layout: "login-layout" });
+}
+
+exports.newEntry = function (req, res) {
+	res.render("new-entry", { layout: "no-new-entry" })
+}
+
+// TODO MAKE SCHEMA 
+exports.addEntry = function(req, res) {
+
+	var entry = {
+		// entryType is the name attr, and entrytype is id attr in hbs file
+		// for some reason if element is a selection, it needs name attribute instead of id
+		// if id is used to identify selection, the selection won't be detected in the req.body
+		type: req.body.entryType,
+		date: req.body.date,
+		category: req.body.category,
+		description: req.body.description,
+		amount: req.body.amount,
+		notes: req.body.notes,
+		user: req.session.userId
+	}
+
+	try {
+		postModel.createEntry(entry);
+	} catch(error) {
+		console.log("Could not create entry: ", error); 
+		res.redirect("/")
+	}
 }
