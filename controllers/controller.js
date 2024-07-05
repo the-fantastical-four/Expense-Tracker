@@ -65,3 +65,43 @@ exports.addEntry = function(req, res) {
 		res.redirect("/")
 	}
 }
+
+exports.deleteEntry = async function (req, res) {
+	var entryID = req.query.id;
+	try {
+		await postModel.deleteEntry(entryID);
+		res.redirect('/'); 
+	}
+	catch (error) {
+		console.log("Could not delete entry: ", error); 
+		res.redirect('/'); 
+	}
+}
+
+exports.getEditEntry = async function (req, res) {
+	try {
+		[entry] = await postModel.getById(req.query.id);
+		res.render("edit-entry", entry)
+	} catch (error) {
+		console.log("Could not retrieve entry: ", error);
+		res.redirect("/");
+	}
+}
+
+exports.confirmEditEntry = async function(req, res) {
+    var newEdits = {
+        entryType: req.body.entryType,
+        date: req.body.date,
+        category: req.body.category,
+        description: req.body.description,
+        amount: req.body.amount,
+        notes: req.body.notes
+    }
+
+    try {
+    	await postModel.editEntry(req.body.id, newEdits);
+    } catch (error) {
+    	console.log("Could not edit entry: ", error);
+    	res.redirect("/");
+    }
+}

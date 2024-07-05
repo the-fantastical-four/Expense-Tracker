@@ -71,7 +71,6 @@ $(document).ready(function() {
                 description: description.val(),
                 amount: amount.val(),
                 notes: notes.val(),
-                ORnumber: ORnum.val(),
                 id: $("#confirmbtn").val()
             }
 

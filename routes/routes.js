@@ -36,5 +36,8 @@ router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validat
 router.get('/new-entry', isPrivate, controller.newEntry); 
 router.post('/add-entry', isPrivate, controller.addEntry); 
 router.get('/view/entry', isPrivate, controller.getEntry);  
+router.get('/delete/entry', isPrivate, controller.deleteEntry);
+router.get('/edit/entry', isPrivate, controller.getEditEntry);
+router.post('/edit/confirm', isPrivate, controller.confirmEditEntry);
 
 module.exports = router; 

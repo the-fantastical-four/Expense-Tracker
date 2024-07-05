@@ -63,18 +63,40 @@ exports.getById = async function(postId) {
     }
 }
 
-// exports.deleteEntry = function(id, next) {
-//     postModel.deleteOne({ _id: id }).exec(function(err, result) {
-//         if(err) throw err; 
-//         next(result);
-//     });
-// }
+exports.deleteEntry = async function(postId) {
+    const connection = await mysql.createConnection(dbConfig);
 
-// exports.editEntry = function(id, edits) {
-//     postModel.updateOne(id, edits).exec(function(err) {
-//         if(err) throw err; 
-//     });
-// }
+    try {
+        const [results] = await connection.query('DELETE FROM posts WHERE post_id = ?', [postId]);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
+
+exports.editEntry = async function(postId, edits) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const sql = 
+        "UPDATE posts " +
+        "SET type = ?, date = ?, category = ?, description = ?, amount = ?, notes = ? " + 
+        "WHERE post_id = ?"; 
+
+    const values = [edits.entryType, edits.date, edits.category, edits.description, edits.amount, edits.notes, postId]
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
 
 // exports.deleteMany = function(id, next) {
 //     postModel.deleteMany({ user: id }).exec(function(err, result) {
