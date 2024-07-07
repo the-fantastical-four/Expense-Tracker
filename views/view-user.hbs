@@ -3,14 +3,16 @@
 <section>
     <div id="infoinput">
         <img src="/{{profile_picture}}" alt="User Image">
-        <h2 id="name"> Name: {{full_name}} </h2><br>
+        <h2 id="full_name"> Name: {{full_name}} </h2><br>
         <text id="email"> Email: {{email}} </text><br>
-        <text id="phone"> Phone: {{phone_number}} </text>
+        <text id="phone_number"> Phone: {{phone_number}} </text>
     </div>
     <div id="buttons">
         {{!-- BUTTONS NOT WORKING --}}
+        
+        <button id="editbtn" onclick="location.href='/edit/user?id={{user_id}}'">Edit</button>
+        
         <!--
-        <button id="editbtn" onclick="location.href='/edit/user?id={{post_id}}'">Edit</button>
         <button id="deletebtn" onclick="location.href='/delete/user?id={{post_id}}'">Delete</button>
         -->
     </div>

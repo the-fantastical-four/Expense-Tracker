@@ -197,7 +197,35 @@ exports.getUser = async function (req, res) {
         console.log([user]);
         res.render("view-user", user);
     } catch (error) {
-        console.log("Could not retrieve entry: ", error);
+        console.log("Could not retrieve user: ", error);
         res.redirect("/");
+    }
+}
+
+exports.getEditUser = async function (req, res) {
+	try {
+		const userId = req.query.id;
+		const [user] = await userModel.getAccountEntry(userId);
+		res.render("edit-user", user)
+	} catch (error) {
+		console.log("Could not retrieve user: ", error);
+		res.redirect("/");
+	}
+}
+
+exports.confirmEditUser = async function(req, res) {
+    var newEdits = {
+        full_name: req.body.full_name,
+        email: req.body.email,
+        phone_number: req.body.phone_number
+    }
+
+    try {
+		//const userId = req.query.id;
+		//req.body.id
+    	await userModel.editUser(req.body.id, newEdits);
+    } catch (error) {
+    	console.log("Could not edit user: ", error);
+    	res.redirect("/");
     }
 }

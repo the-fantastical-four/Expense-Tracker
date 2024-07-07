@@ -177,3 +177,24 @@ exports.isBlacklisted = async function(ipAddress) {
         await connection.end();
     }
 }
+
+exports.editUser = async function(user_id, edits) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const sql = 
+        "UPDATE accounts " +
+        "SET full_name = ?, email = ?, phone_number = ? " + 
+        "WHERE user_id = ?"; 
+
+    const values = [edits.full_name, edits.email, edits.phone_number, user_id]
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
