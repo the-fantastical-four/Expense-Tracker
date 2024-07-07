@@ -165,6 +165,8 @@ exports.logoutUser = (req, res) => {
 // TODO: Change this to actually render all account information 
 exports.viewAccounts = async (req, res) => {
 	// just a dummy
+
+	/*
 	const entries = await userModel.getAllAccounts(); 
 
 	res.render(
@@ -172,4 +174,30 @@ exports.viewAccounts = async (req, res) => {
 			"account-entry": entries
 		}
 	)
+		*/
+
+	try {
+		entries = await userModel.getAllAccounts();;
+
+		res.render(
+			"admin-panel", {
+			"account-entry": entries
+		});
+	}
+	catch(error) {
+		console.log("Could not retrieve entries: ", error); 
+		res.redirect("/")
+	}
+}
+
+exports.getUser = async function (req, res) {
+	try {
+        const userId = req.query.id;
+        const [user] = await userModel.getAccountEntry(userId);
+        console.log([user]);
+        res.render("view-user", user);
+    } catch (error) {
+        console.log("Could not retrieve entry: ", error);
+        res.redirect("/");
+    }
 }

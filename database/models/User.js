@@ -2,6 +2,8 @@ const supabase = require('../../supabaseClient')
 const mysql = require('mysql2/promise'); 
 const { dbConfig } = require('../../config'); 
 
+const normalizePath = (path) => path.replace(/\\/g, '/');
+
 exports.createUser = async function (data) {
     const connection = await mysql.createConnection(dbConfig);
     const {
@@ -101,6 +103,26 @@ exports.getAccountId = async function(email) {
         await connection.end();
     }
 }
+
+exports.getAccountEntry = async function(user_id) {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    try {
+        const [results] = await connection.query('SELECT * FROM accounts WHERE user_id = ?', [user_id]); 
+        if (results.length > 0) {
+            results[0].profile_picture = normalizePath(results[0].profile_picture);
+        }
+        return results; 
+    }
+    catch(error) {
+        console.log(error); 
+        throw error; 
+    }
+    finally {
+        await connection.end();
+    }
+}
+
 
 exports.getAllAccounts = async function() {
     const connection = await mysql.createConnection(dbConfig);
