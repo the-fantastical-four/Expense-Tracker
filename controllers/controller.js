@@ -22,6 +22,11 @@ exports.getAllEntries = async function (req, res) {
 exports.getEntry = async function (req, res) {
 	try {
 		[entry] = await postModel.getById(req.query.id);
+		
+		if(entry === undefined) {
+			throw new Error('Entry does not exist'); 
+		}
+
 		res.render("view-entry", entry)
 	}
 	catch(error) {
@@ -43,7 +48,7 @@ exports.newEntry = function (req, res) {
 }
 
 // TODO MAKE SCHEMA 
-exports.addEntry = function(req, res) {
+exports.addEntry = async function(req, res) {
 
 	var entry = {
 		// entryType is the name attr, and entrytype is id attr in hbs file
@@ -59,7 +64,11 @@ exports.addEntry = function(req, res) {
 	}
 
 	try {
-		postModel.createEntry(entry);
+		await postModel.createEntry(entry);
+		const redirect = '/'; 
+		return res.json({
+			redirect: redirect
+		});
 	} catch(error) {
 		console.log("Could not create entry: ", error); 
 		res.redirect("/")
@@ -81,6 +90,11 @@ exports.deleteEntry = async function (req, res) {
 exports.getEditEntry = async function (req, res) {
 	try {
 		[entry] = await postModel.getById(req.query.id);
+
+		if(entry === undefined) {
+			throw new Error('Could not find entry'); 
+		}
+
 		res.render("edit-entry", entry)
 	} catch (error) {
 		console.log("Could not retrieve entry: ", error);
@@ -98,8 +112,14 @@ exports.confirmEditEntry = async function(req, res) {
         notes: req.body.notes
     }
 
+	const entryId = req.body.id; 
+
     try {
-    	await postModel.editEntry(req.body.id, newEdits);
+    	await postModel.editEntry(entryId, newEdits);
+		const redirect = '/view/entry?id=' + entryId;
+		return res.json({
+			redirect: redirect
+		});
     } catch (error) {
     	console.log("Could not edit entry: ", error);
     	res.redirect("/");
