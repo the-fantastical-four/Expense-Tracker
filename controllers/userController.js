@@ -206,6 +206,11 @@ exports.getEditUser = async function (req, res) {
 	try {
 		const userId = req.query.id;
 		const [user] = await userModel.getAccountEntry(userId);
+
+		if(user === undefined) {
+			throw new Error('Could not find entry'); 
+		}
+
 		res.render("edit-user", user)
 	} catch (error) {
 		console.log("Could not retrieve user: ", error);
@@ -220,10 +225,14 @@ exports.confirmEditUser = async function(req, res) {
         phone_number: req.body.phone_number
     }
 
+	const userId = req.body.id; 
+
     try {
-		//const userId = req.query.id;
-		//req.body.id
-    	await userModel.editUser(req.body.id, newEdits);
+    	await userModel.editUser(userId, newEdits);
+		const redirect = '/view/user?id=' + userId;
+		return res.json({
+			redirect: redirect
+		});
     } catch (error) {
     	console.log("Could not edit user: ", error);
     	res.redirect("/");

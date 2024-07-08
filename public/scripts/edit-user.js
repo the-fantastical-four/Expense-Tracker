@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var full_name = $("#full_name");
     var email = $("#email");
-    var phone_number = $("#phone_number"); // not required
+    var phone_number = $("#phone_number");
 
     // sets border to red
     function setError(element) {
@@ -18,7 +18,6 @@ $(document).ready(function() {
         // check if description is empty 
         var isValid = true;
 
-        // check full name
         if (full_name.val() == "") {
             setError(full_name);
             isValid = false;
@@ -26,8 +25,6 @@ $(document).ready(function() {
         else {
             setDefault(full_name);
         }
-
-        // check email
         if (email.val() == "") {
             setError(email)
             isValid = false;
@@ -35,7 +32,6 @@ $(document).ready(function() {
         else {
             setDefault(email);
         }
-
         if (phone_number.val() == "") {
             setError(phone_number)
             isValid = false;
@@ -55,15 +51,12 @@ $(document).ready(function() {
                 id: $("#confirmbtn").val()
             }
 
-            $.post("/edit/confirm-user", edits, function (data, status) {
-                console.log(data);
+            $.post("/edit/confirm-user", edits, function (response) {
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
             });
 
-            setTimeout(function() {
-                var back = "/view/user?id=" + $("#confirmbtn").val();
-                window.location.href = back;
-            }, 500);
-            //window.open(back, "_self");
         }
 
     })
