@@ -165,6 +165,8 @@ exports.logoutUser = (req, res) => {
 // TODO: Change this to actually render all account information 
 exports.viewAccounts = async (req, res) => {
 	// just a dummy
+
+	/*
 	const entries = await userModel.getAllAccounts(); 
 
 	res.render(
@@ -172,4 +174,79 @@ exports.viewAccounts = async (req, res) => {
 			"account-entry": entries
 		}
 	)
+		*/
+
+	try {
+		entries = await userModel.getAllAccounts();;
+
+		res.render(
+			"admin-panel", {
+			"account-entry": entries
+		});
+	}
+	catch(error) {
+		console.log("Could not retrieve entries: ", error); 
+		res.redirect("/")
+	}
+}
+
+exports.getUser = async function (req, res) {
+	try {
+        const userId = req.query.id;
+        const [user] = await userModel.getAccountEntry(userId);
+        console.log([user]);
+        res.render("view-user", user);
+    } catch (error) {
+        console.log("Could not retrieve user: ", error);
+        res.redirect("/");
+    }
+}
+
+exports.getEditUser = async function (req, res) {
+	try {
+		const userId = req.query.id;
+		const [user] = await userModel.getAccountEntry(userId);
+
+		if(user === undefined) {
+			throw new Error('Could not find entry'); 
+		}
+
+		res.render("edit-user", user)
+	} catch (error) {
+		console.log("Could not retrieve user: ", error);
+		res.redirect("/");
+	}
+}
+
+exports.confirmEditUser = async function(req, res) {
+    var newEdits = {
+        full_name: req.body.full_name,
+        email: req.body.email,
+        phone_number: req.body.phone_number
+    }
+
+	const userId = req.body.id; 
+
+    try {
+    	await userModel.editUser(userId, newEdits);
+		const redirect = '/view/user?id=' + userId;
+		return res.json({
+			redirect: redirect
+		});
+    } catch (error) {
+    	console.log("Could not edit user: ", error);
+    	res.redirect("/");
+    }
+}
+
+exports.deleteUser = async function (req, res) {
+	var userId = req.query.id;
+	try {
+		await userModel.deleteUser(userId);
+		res.redirect('/admin-panel'); 
+	}
+	catch (error) {
+		console.log("Could not delete entry: ", error); 
+		res.redirect('/'); 
+	}
 }

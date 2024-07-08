@@ -39,5 +39,11 @@ router.get('/view/entry', isPrivate, controller.getEntry);
 router.get('/delete/entry', isPrivate, controller.deleteEntry);
 router.get('/edit/entry', isPrivate, controller.getEditEntry);
 router.post('/edit/confirm', isPrivate, controller.confirmEditEntry);
+router.get('/view/user', isPrivate, userController.getUser);
+router.get('/edit/user', isPrivate, userController.getEditUser);
+router.post('/edit/confirm-user', isPrivate, userController.confirmEditUser);
+router.get('/delete/user', isPrivate, userController.deleteUser);
+
+
 
 module.exports = router; 
