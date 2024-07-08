@@ -1,7 +1,7 @@
-<div class="entry" onclick="location.href='/view/entry?id={{_id}}';">
-    <span class="full-name">{{description}}</span>
-    <span class="entryType">{{entryType}}</span>
+<div class="entry" onclick="location.href='/view/entry?id={{post_id}}';">
+    <span class="description">{{description}}</span>
+    <span class="entryType">{{type}}</span>
     <br>
     <span class="amount">{{currency amount}}</span>
-    <span class="date">{{date}}</span>
+    <span class="date">{{formatDate date}}</span>
 </div>

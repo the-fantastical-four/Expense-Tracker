@@ -33,5 +33,11 @@ router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, mul
 router.post('/login', isPublic, loginValidation, isBlacklisted, antiBruteForce, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
+router.get('/new-entry', isPrivate, controller.newEntry); 
+router.post('/add-entry', isPrivate, controller.addEntry); 
+router.get('/view/entry', isPrivate, controller.getEntry);  
+router.get('/delete/entry', isPrivate, controller.deleteEntry);
+router.get('/edit/entry', isPrivate, controller.getEditEntry);
+router.post('/edit/confirm', isPrivate, controller.confirmEditEntry);
 
 module.exports = router; 
