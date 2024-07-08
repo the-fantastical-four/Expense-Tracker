@@ -82,11 +82,11 @@ $(document).ready(function() {
                 notes: notes.val()
             }
 
-            $.post('add-entry', newEntry, function(data, status) {
-                console.log(data);
+            $.post('add-entry', newEntry, function(response) {
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
             })
-
-            window.open("/", "_self");
         }
     });
 
