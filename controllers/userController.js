@@ -229,3 +229,15 @@ exports.confirmEditUser = async function(req, res) {
     	res.redirect("/");
     }
 }
+
+exports.deleteUser = async function (req, res) {
+	var userId = req.query.id;
+	try {
+		await userModel.deleteUser(userId);
+		res.redirect('/admin-panel'); 
+	}
+	catch (error) {
+		console.log("Could not delete entry: ", error); 
+		res.redirect('/'); 
+	}
+}

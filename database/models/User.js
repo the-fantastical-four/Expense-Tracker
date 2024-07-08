@@ -198,3 +198,17 @@ exports.editUser = async function(user_id, edits) {
         await connection.end();
     }
 }
+
+exports.deleteUser = async function(user_id) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    try {
+        const [results] = await connection.query('DELETE FROM accounts WHERE user_id = ?', [user_id]);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
