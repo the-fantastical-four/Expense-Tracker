@@ -17,7 +17,7 @@ exports.isPublic = (req, res, next) => {
 }
 
 exports.isAdmin = (req, res, next) => {
-    if (req.session.role === 'admin') {
+    if (req.session.role === 'admin' && req.session.userId) {
         return next();
     }
     else {

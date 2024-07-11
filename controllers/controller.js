@@ -21,7 +21,7 @@ exports.getAllEntries = async function (req, res) {
 
 exports.getEntry = async function (req, res) {
 	try {
-		[entry] = await postModel.getById(req.query.id);
+		[entry] = await postModel.getById(req.query.id, req.session.userId);
 		
 		if(entry === undefined) {
 			throw new Error('Entry does not exist'); 
@@ -78,7 +78,7 @@ exports.addEntry = async function(req, res) {
 exports.deleteEntry = async function (req, res) {
 	var entryID = req.query.id;
 	try {
-		await postModel.deleteEntry(entryID);
+		await postModel.deleteEntry(entryID, req.session.userId);
 		res.redirect('/'); 
 	}
 	catch (error) {
@@ -89,7 +89,7 @@ exports.deleteEntry = async function (req, res) {
 
 exports.getEditEntry = async function (req, res) {
 	try {
-		[entry] = await postModel.getById(req.query.id);
+		[entry] = await postModel.getById(req.query.id, req.session.userId);
 
 		if(entry === undefined) {
 			throw new Error('Could not find entry'); 
@@ -113,9 +113,10 @@ exports.confirmEditEntry = async function(req, res) {
     }
 
 	const entryId = req.body.id; 
+	const userId = req.session.userId; 
 
     try {
-    	await postModel.editEntry(entryId, newEdits);
+    	await postModel.editEntry(entryId, userId, newEdits);
 		const redirect = '/view/entry?id=' + entryId;
 		return res.json({
 			redirect: redirect

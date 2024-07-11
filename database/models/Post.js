@@ -49,43 +49,11 @@ exports.createEntry = async function(entry) {
     }
 }
 
-exports.getById = async function(postId) {
+exports.getById = async function(postId, userId) {
     const connection = await mysql.createConnection(dbConfig);
 
-    try {
-        const [results] = await connection.query('SELECT * FROM posts WHERE post_id = ?', [postId]);
-        return results;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    } finally {
-        await connection.end();
-    }
-}
-
-exports.deleteEntry = async function(postId) {
-    const connection = await mysql.createConnection(dbConfig);
-
-    try {
-        const [results] = await connection.query('DELETE FROM posts WHERE post_id = ?', [postId]);
-        return results;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    } finally {
-        await connection.end();
-    }
-}
-
-exports.editEntry = async function(postId, edits) {
-    const connection = await mysql.createConnection(dbConfig);
-
-    const sql = 
-        "UPDATE posts " +
-        "SET type = ?, date = ?, category = ?, description = ?, amount = ?, notes = ? " + 
-        "WHERE post_id = ?"; 
-
-    const values = [edits.entryType, edits.date, edits.category, edits.description, edits.amount, edits.notes, postId]
+    const sql = 'SELECT * FROM posts WHERE post_id = ? AND user_id = ?'
+    const values = [postId, userId]
 
     try {
         const [results] = await connection.query(sql, values);
@@ -98,9 +66,38 @@ exports.editEntry = async function(postId, edits) {
     }
 }
 
-// exports.deleteMany = function(id, next) {
-//     postModel.deleteMany({ user: id }).exec(function(err, result) {
-//         if(err) throw err; 
-//         next(result);
-//     });
-// }
+exports.deleteEntry = async function(postId, userId) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    try {
+        const [results] = await connection.query('DELETE FROM posts WHERE post_id = ? AND user_id = ?', [postId, userId]);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
+
+exports.editEntry = async function(postId, userId, edits) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const sql = 
+        "UPDATE posts " +
+        "SET type = ?, date = ?, category = ?, description = ?, amount = ?, notes = ? " + 
+        "WHERE post_id = ? " + 
+        "AND user_id = ?"; 
+
+    const values = [edits.entryType, edits.date, edits.category, edits.description, edits.amount, edits.notes, postId, userId]
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
