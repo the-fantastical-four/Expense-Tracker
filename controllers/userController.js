@@ -226,8 +226,22 @@ exports.confirmEditUser = async function(req, res) {
     }
 
 	const userId = req.body.id; 
+	const emailPattern = /^((?:[A-Za-z0-9!#$%&'*+\-\/=?^_`{|}~]|(?<=^|\.)"|"(?=$|\.|@)|(?<=".*)[ .](?=.*")|(?<!\.)\.){1,64})(@)((?:[A-Za-z0-9.\-])*(?:[A-Za-z0-9])\.(?:[A-Za-z0-9]){2,})$/;
+
+	function validateInput(input, pattern) {
+        return pattern.test(input);
+    }
+
+	console.log("email:", newEdits.email);
+
 
     try {
+		if (!validateInput(newEdits.email, emailPattern)) {
+			console.log("Invalid email:", newEdits.email);
+			return res.redirect('/view/user?id=' + userId);
+			//res.status(400).json({ error: "Invalid email address" });
+		}
+
     	await userModel.editUser(userId, newEdits);
 		const redirect = '/view/user?id=' + userId;
 		return res.json({
