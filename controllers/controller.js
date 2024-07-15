@@ -1,11 +1,12 @@
 // import database stuff
 const postModel = require("../database/models/Post");
 const userModel = require("../database/models/User")
+const logger = require('../middlewares/logger');
 const path = require('path');
-const { ObjectId } = require('mongodb');
+
+
 
 exports.getAllEntries = async function (req, res) {
-
 	try {
 		entries = await postModel.getAllEntries(req.session.userId);
 
@@ -49,7 +50,6 @@ exports.newEntry = function (req, res) {
 
 // TODO MAKE SCHEMA 
 exports.addEntry = async function(req, res) {
-
 	var entry = {
 		// entryType is the name attr, and entrytype is id attr in hbs file
 		// for some reason if element is a selection, it needs name attribute instead of id
@@ -63,14 +63,41 @@ exports.addEntry = async function(req, res) {
 		user: req.session.userId
 	}
 
+
 	try {
 		await postModel.createEntry(entry);
+
+
+		await logger.log({
+            user: req.session.userId,
+            timestamp: new Date().toISOString(),
+            action: "CREATE",
+            targetPost: "",
+            targetUser: "",
+            result: "OK",
+            message: "Entry created successfully",
+            ip: req.ip
+        });
+
 		const redirect = '/'; 
 		return res.json({
 			redirect: redirect
 		});
 	} catch(error) {
 		console.log("Could not create entry: ", error); 
+
+		// Log the error
+        await logger.log({
+            user: req.session.userId,
+            timestamp: new Date().toISOString(),
+            action: "CREATE",
+            targetPost: "",
+            targetUser: "",
+            result: "ERROR",
+            message: error.message,
+            ip: req.ip
+        });
+
 		res.redirect("/")
 	}
 }
@@ -79,10 +106,37 @@ exports.deleteEntry = async function (req, res) {
 	var entryID = req.query.id;
 	try {
 		await postModel.deleteEntry(entryID);
+
+		// Log the action
+        await logger.log({
+            user: req.session.userId,
+            timestamp: new Date().toISOString(),
+            action: "DELETE",
+            targetPost: entryID,
+            targetUser: "",
+            result: "OK",
+            message: "Entry deleted successfully",
+            ip: req.ip
+        });
+
+
 		res.redirect('/'); 
 	}
 	catch (error) {
 		console.log("Could not delete entry: ", error); 
+
+		// Log the error
+        await logger.log({
+            user: req.session.userId,
+            timestamp: new Date().toISOString(),
+            action: "DELETE",
+            targetPost: entryID,
+            targetUser: "",
+            result: "ERROR",
+            message: error.message,
+            ip: req.ip
+        });
+
 		res.redirect('/'); 
 	}
 }
@@ -113,15 +167,44 @@ exports.confirmEditEntry = async function(req, res) {
     }
 
 	const entryId = req.body.id; 
+	
 
     try {
     	await postModel.editEntry(entryId, newEdits);
+
+		// Log the action
+        await logger.log({
+            user: req.session.userId,
+            timestamp: new Date().toISOString(),
+            action: "EDIT",
+            targetPost: entryId,
+            targetUser: "",
+            result: "OK",
+            message: "Entry edited successfully",
+            ip: req.ip
+        });
+
+
 		const redirect = '/view/entry?id=' + entryId;
 		return res.json({
 			redirect: redirect
 		});
     } catch (error) {
     	console.log("Could not edit entry: ", error);
+
+		// Log the error
+        await logger.log({
+            user: req.session.userId,
+            timestamp: new Date().toISOString(),
+            action: "EDIT",
+            targetPost: entryId,
+            targetUser: "",
+            result: "ERROR",
+            message: error.message,
+            ip: req.ip
+        });
+
+
     	res.redirect("/");
     }
 }

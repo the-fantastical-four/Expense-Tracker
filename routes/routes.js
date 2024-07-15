@@ -8,6 +8,9 @@ const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
 
 const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce');
+const fs = require('fs');
+const path = require('path');
+
 
 
 // ROUTES
@@ -24,6 +27,23 @@ router.get('/captcha', (req, res) => {
     req.session.captcha = captcha.text; // Store the captcha text in the session
     res.type('svg');
     res.status(200).send(captcha.data);
+});
+
+router.post('/log', async (req, res) => {
+    const logEntry = req.body;
+    const logFilePath = path.join(__dirname, '../logs.json');
+
+    try {
+        const data = fs.readFileSync(logFilePath, 'utf8');
+        const logs = JSON.parse(data);
+        logs.push(logEntry);
+
+        fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2));
+        res.status(200).send('Log saved');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
 });
 
 router.get('/', isPrivate, controller.getAllEntries);
