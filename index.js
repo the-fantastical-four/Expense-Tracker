@@ -40,7 +40,7 @@ const options = {
 // });
 
 https.createServer(options, app).listen(3000, () => {
-    console.log('Ready on https://localhost:3000');
+    console.log('Run on https://localhost:3000');
  });
   
 // const options = {
