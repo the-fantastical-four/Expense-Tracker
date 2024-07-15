@@ -4,6 +4,10 @@ const userModel = require("../database/models/User")
 const logger = require('../middlewares/logger');
 const path = require('path');
 
+const moment = require('moment-timezone');
+const timezone = moment.tz.guess();
+
+const timestamp = moment().tz(timezone).format();
 
 
 exports.getAllEntries = async function (req, res) {
@@ -63,14 +67,13 @@ exports.addEntry = async function(req, res) {
 		user: req.session.userId
 	}
 
-
 	try {
 		await postModel.createEntry(entry);
 
 
 		await logger.log({
             user: req.session.userId,
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
             action: "CREATE",
             targetPost: "",
             targetUser: "",
@@ -89,7 +92,7 @@ exports.addEntry = async function(req, res) {
 		// Log the error
         await logger.log({
             user: req.session.userId,
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
             action: "CREATE",
             targetPost: "",
             targetUser: "",
@@ -110,7 +113,7 @@ exports.deleteEntry = async function (req, res) {
 		// Log the action
         await logger.log({
             user: req.session.userId,
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
             action: "DELETE",
             targetPost: entryID,
             targetUser: "",
@@ -128,7 +131,7 @@ exports.deleteEntry = async function (req, res) {
 		// Log the error
         await logger.log({
             user: req.session.userId,
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
             action: "DELETE",
             targetPost: entryID,
             targetUser: "",
@@ -175,7 +178,7 @@ exports.confirmEditEntry = async function(req, res) {
 		// Log the action
         await logger.log({
             user: req.session.userId,
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
             action: "EDIT",
             targetPost: entryId,
             targetUser: "",
@@ -195,7 +198,7 @@ exports.confirmEditEntry = async function(req, res) {
 		// Log the error
         await logger.log({
             user: req.session.userId,
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
             action: "EDIT",
             targetPost: entryId,
             targetUser: "",
