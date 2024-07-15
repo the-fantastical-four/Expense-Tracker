@@ -65,11 +65,11 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        // secure: true, // basically makes cookies secure, only turn on if HTTPS!!! 
-        // httpOnly: true, // prevent client-side JavaScript from accessing the cookie
-        // sameSite: 'strict', // helps protect against CSRF attacks
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }, // Set to true in production if using HTTPS
+        secure: true, // basically makes cookies secure, only turn on if HTTPS!!! 
+        httpOnly: true, // prevent client-side JavaScript from accessing the cookie
+        sameSite: 'strict', // helps protect against CSRF attacks
+        maxAge: 60 * 1000 // 1 min
+    }, // Set to true in production if using HTTPS 
     store: sessionStore,
 }));
 
