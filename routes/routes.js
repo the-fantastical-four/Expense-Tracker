@@ -6,6 +6,7 @@ const svgCaptcha = require('svg-captcha');
 const { validateCaptcha, trackFailedAttempts } = require('../middlewares/validateCaptcha.js');
 const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
+const logger = require('../middlewares/logger');
 
 const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce');
 const fs = require('fs');
@@ -29,22 +30,7 @@ router.get('/captcha', (req, res) => {
     res.status(200).send(captcha.data);
 });
 
-router.post('/log', async (req, res) => {
-    const logEntry = req.body;
-    const logFilePath = path.join(__dirname, '../logs.json');
-
-    try {
-        const data = fs.readFileSync(logFilePath, 'utf8');
-        const logs = JSON.parse(data);
-        logs.push(logEntry);
-
-        fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2));
-        res.status(200).send('Log saved');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
-    }
-});
+router.post('/log', (req, res) => logger.logRequest(req, res));
 
 router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);

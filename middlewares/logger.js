@@ -1,5 +1,7 @@
 // logger.js
 const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
 
 class Logger {
     constructor() {
@@ -26,6 +28,23 @@ class Logger {
             }
         } catch (error) {
             console.error('There has been a problem with your fetch operation:', error);
+        }
+    }
+
+    async logRequest(req, res) {
+        const logEntry = req.body;
+        const logFilePath = path.join(__dirname, '../logs.json');
+
+        try {
+            const data = fs.readFileSync(logFilePath, 'utf8');
+            const logs = JSON.parse(data);
+            logs.push(logEntry);
+
+            fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2));
+            res.status(200).send('Log saved');
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Server error');
         }
     }
 }
