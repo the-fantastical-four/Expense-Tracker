@@ -8,6 +8,11 @@ const MySQLStore = require('express-mysql-session')(session);
 
 const router = require("./routes/routes")
 
+const https = require('https');
+require('./middlewares/setupCerts');
+const fs = require('fs');
+const path = require('path');
+
 const app = new express();
 
 const {
@@ -20,18 +25,16 @@ const mysql = require('mysql2');
 const connection = mysql.createConnection(dbConfig); 
 const sessionStore = new MySQLStore({}, connection); 
 
-// init server port
-//const port = 3000; 
-var PORT = envPort || 3000;
-var server = app.listen(PORT, function () {
-    console.log("Listening at port " + PORT + "...");
-});
-
 const options = {
-    useNewURLParser: true, 
-    useUnifiedTopology: true
-}
+    key: fs.readFileSync(path.join(__dirname, 'certs', 'server.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'certs', 'server.crt')),
+};
 
+
+https.createServer(options, app).listen(envPort || 3000, () => {
+    console.log(`Run on https://localhost:${envPort || 3000}`);
+});
+  
 // Initialize data and static folder 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })) 
@@ -49,11 +52,11 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        // secure: true, // basically makes cookies secure, only turn on if HTTPS!!! 
-        // httpOnly: true, // prevent client-side JavaScript from accessing the cookie
-        // sameSite: 'strict', // helps protect against CSRF attacks
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }, // Set to true in production if using HTTPS
+        secure: true, // basically makes cookies secure, only turn on if HTTPS!!! 
+        httpOnly: true, // prevent client-side JavaScript from accessing the cookie
+        sameSite: 'strict', // helps protect against CSRF attacks
+        maxAge: 60 * 1000 // 1 min
+    }, // Set to true in production if using HTTPS 
     store: sessionStore,
 }));
 

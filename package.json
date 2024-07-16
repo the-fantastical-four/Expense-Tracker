@@ -39,6 +39,7 @@
     "nodemailer": "^6.9.13",
     "pg": "^8.11.5",
     "read-chunk": "^4.0.3",
+    "selfsigned": "^2.4.1",
     "svg-captcha": "^1.4.0"
   },
   "devDependencies": {

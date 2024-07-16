@@ -5,11 +5,16 @@
     <div id="infoinput">
         <img src="/{{profile_picture}}" alt="User Image"><br>
         <h2>Name:</h2>
-        <input id="full_name" type="text" value="{{full_name}}" placeholder="Name"><br>
+        <input id="full_name" name="full_name" type="text" value="{{full_name}}" placeholder="Name"><br>
+        <div id="full_name_error" display="none" class="error-message"></div><br>
+
         <h2>Email:</h2>
-        <input id="email" type="email" value="{{email}}" placeholder="Email"><br>
+        <input id="email" name="email" type="email" value="{{email}}" placeholder="Email"><br>
+        <div id="email_error" display="none"  class="error-message"></div><br>
+
         <h2>Phone:</h2>
-        <input id="phone_number" type="tel" value="{{phone_number}}" placeholder="Phone">
+        <input id="phone_number" name="phone_number" type="tel" value="{{phone_number}}" placeholder="Phone">
+        <div id="phone_error" display="none" class="error-message"></div>
     </div>
    
     <div id="buttons">
