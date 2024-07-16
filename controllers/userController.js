@@ -239,6 +239,8 @@ exports.confirmEditUser = async function(req, res) {
         phone_number: req.body.phone_number
     }
 
+	console.log("email:", newEdits.email);
+
 	const userId = req.body.id; 
 
     try {
