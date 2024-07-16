@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 function validateCaptcha(req, res, next) {
     const userCaptcha = req.body.captcha;
     if (userCaptcha === req.session.captcha) {
@@ -13,6 +15,13 @@ function validateCaptcha(req, res, next) {
             req.flash('error_msg', 'CAPTCHA verification failed. Please try again.');
             req.session.failedAttempts++; // Increment failed attempts count
         }
+
+        fs.unlink(req.file.path, (err) => {
+            if (err) {
+                console.error('Failed to delete invalid file:', err);
+            }
+        });
+        
         res.redirect('/signup');
     }
 }
@@ -41,7 +50,7 @@ function trackFailedAttempts(req, res, next) {
             req.session.lockedOut = false;
             req.session.lockoutTime = null;
         } else {
-            // User is still locked out, redirect to signup page with error message
+            // User is still locked out
             req.flash('error_msg', 'You are currently locked out. Please try again later.');
             return res.redirect('/signup');
         }

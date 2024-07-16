@@ -61,9 +61,17 @@ $(document).ready(function() {
 
         return isValid;
     }
+
+    function getQueryParam(param) {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
     
     $("#confirmbtn").click(function() {
-        if(validate()) {
+        if (validate()) {
+
+            var queryId = getQueryParam('id');
+
             var edits = {
                 entryType: type.find(":selected").val(),
                 date: date.val(),
@@ -71,16 +79,14 @@ $(document).ready(function() {
                 description: description.val(),
                 amount: amount.val(),
                 notes: notes.val(),
-                ORnumber: ORnum.val(),
-                id: $("#confirmbtn").val()
+                id: queryId
             }
 
-            $.post("/edit/confirm", edits, function (data, status) {
-                console.log(data);
+            $.post("/edit/confirm", edits, function (response) {
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
             });
-
-            var back = "/view/entry?id=" + $("#confirmbtn").val();
-            window.open(back, "_self");
         }
 
     })

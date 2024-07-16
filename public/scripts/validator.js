@@ -4,7 +4,7 @@ const registerValidation = [
     //Email check
     body('email')
         .not().isEmpty().withMessage("Please fill out the email section.")
-        .matches(/^[a-zA-Z0-9]+([_.-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/)
+        .matches(/^((?:[A-Za-z0-9!#$%&'*+\-\/=?^_`{|}~]|(?<=^|\.)"|"(?=$|\.|@)|(?<=".*)[ .](?=.*")|(?<!\.)\.){1,64})(@)((?:[A-Za-z0-9.\-])*(?:[A-Za-z0-9])\.(?:[A-Za-z0-9]){2,})$/)
         .withMessage('Invalid email format.\n'),
 
 

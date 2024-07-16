@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="/css/viewentrystyle.css">
+<script src="/scripts/view-entry.js"></script>
+
+<section>
+    <div id="type">
+        <text>{{type}}</text>
+    </div>
+
+    <div id="infoinput">
+        <div id="leftcolumn">
+            <h2 id="description"> {{description}} </h2><br>
+            <text id="date"> {{formatDate date}} </text><br>
+            <text id="category"> {{category}} </text>
+        </div>
+        <div id="rightcolumn">
+            <text id="amount" type="number"> {{amount}} </text>
+        </div>
+    </div>
+    <div id="notesarea">
+        <textarea id="notes" disabled> {{notes}} </textarea>
+    </div>
+    <div id="buttons">
+        {{!-- BUTTONS NOT WORKING --}}
+        <button id="editbtn" onclick="location.href='/edit/entry?id={{post_id}}'">Edit</button>
+        <button id="deletebtn" onclick="location.href='/delete/entry?id={{post_id}}'">Delete</button>
+    </div>
+</section>

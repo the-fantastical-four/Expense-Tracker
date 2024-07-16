@@ -4,13 +4,9 @@ const { isPublic, isPrivate, isAdmin } = require('../middlewares/checkAuth.js');
 const { upload, multerErrorHandler } = require('../middlewares/multerConfig.js');
 const svgCaptcha = require('svg-captcha');
 const { validateCaptcha, trackFailedAttempts } = require('../middlewares/validateCaptcha.js');
-
-
-// importing controller
 const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
 
-//anti-brute-force middleware
 const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce');
 
 
@@ -37,5 +33,17 @@ router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, mul
 router.post('/login', isPublic, loginValidation, isBlacklisted, antiBruteForce, userController.loginUser);
 router.get('/logout', isPrivate, userController.logoutUser);
 router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
+router.get('/new-entry', isPrivate, controller.newEntry); 
+router.post('/add-entry', isPrivate, controller.addEntry); 
+router.get('/view/entry', isPrivate, controller.getEntry);  
+router.get('/delete/entry', isPrivate, controller.deleteEntry);
+router.get('/edit/entry', isPrivate, controller.getEditEntry);
+router.post('/edit/confirm', isPrivate, controller.confirmEditEntry);
+router.get('/view/user', isAdmin, userController.getUser);
+router.get('/edit/user', isAdmin, userController.getEditUser);
+router.post('/edit/confirm-user', isAdmin, userController.confirmEditUser);
+router.get('/delete/user', isAdmin, userController.deleteUser);
+
+
 
 module.exports = router; 

@@ -1,14 +1,16 @@
 {{!-- TODO: Change to account details --}}
+<div onclick="location.href='/view/user?id={{user_id}}';">
 <div class="container">
-    <div class="profilePic">
-        <img class="profilePic" src="{{profile_picture}}" alt="profile picture">
-    </div>
+        <div class="profilePic">
+            <img class="profilePic" src="{{profile_picture}}" alt="profile picture">
+        </div>
 
-    <div class="entry">
-        <span class="description">{{full_name}}</span>
-        <span class="entryType">{{email}}</span>
-        <br>
-        <span class="amount">{{phone_number}}</span>
-        <span class="date">{{profile_pic}}</span>
+        <div class="entry">
+            <span class="description">{{full_name}}</span>
+            <span class="entryType">{{email}}</span>
+            <br>
+            <span class="amount">{{phone_number}}</span>
+            <span class="date">{{profile_pic}}</span>
+        </div>
     </div>
 </div>

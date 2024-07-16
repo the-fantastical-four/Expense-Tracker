@@ -1,52 +1,103 @@
-const mongoose = require('mongoose');
+const mysql = require('mysql2/promise');
+const {
+    dbConfig
+} = require('../../config');
 
-const PostSchema = new mongoose.Schema({
-    entryType: String,
-    date: String,
-    category: String,
-    description: String,
-    amount: Number,
-    notes: String,
-    ORnumber: String,
-    user: String // user email
-});
+exports.getAllEntries = async function(userId) {
+    const connection = await mysql.createConnection(dbConfig);
 
-const postModel = mongoose.model('Post', PostSchema);
-
-exports.getAllEntries = function(query, next) {
-    postModel.find(query).lean().exec(function(err, result) {
-        if(err) throw err; 
-        next(result);
-    });
+    try {
+        const [results] = await connection.query('SELECT * FROM posts WHERE user_id = ?', [userId]);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
 }
 
-exports.createEntry = function(doc) {
-    postModel.create(doc);
+
+// TODO MAKE QUERY 
+exports.createEntry = async function(entry) {
+    const connection = await mysql.createConnection(dbConfig);
+    const {
+        type,
+        date,
+        category,
+        description,
+        amount, 
+        notes,
+        user
+    } = entry;
+
+    const sql =
+        "INSERT INTO " +
+        "posts (type, date, category, description, amount, notes, user_id) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    const values = [type, date, category, description, amount, notes, user];
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return [results];
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
 }
 
-exports.getById = function(id, next) {
-    postModel.findById(id).lean().exec(function(err, result) {
-        if(err) throw err; 
-        next(result); 
-    });
+exports.getById = async function(postId, userId) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const sql = 'SELECT * FROM posts WHERE post_id = ? AND user_id = ?'
+    const values = [postId, userId]
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
 }
 
-exports.deleteEntry = function(id, next) {
-    postModel.deleteOne({ _id: id }).exec(function(err, result) {
-        if(err) throw err; 
-        next(result);
-    });
+exports.deleteEntry = async function(postId, userId) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    try {
+        const [results] = await connection.query('DELETE FROM posts WHERE post_id = ? AND user_id = ?', [postId, userId]);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
 }
 
-exports.editEntry = function(id, edits) {
-    postModel.updateOne(id, edits).exec(function(err) {
-        if(err) throw err; 
-    });
-}
+exports.editEntry = async function(postId, userId, edits) {
+    const connection = await mysql.createConnection(dbConfig);
 
-exports.deleteMany = function(id, next) {
-    postModel.deleteMany({ user: id }).exec(function(err, result) {
-        if(err) throw err; 
-        next(result);
-    });
+    const sql = 
+        "UPDATE posts " +
+        "SET type = ?, date = ?, category = ?, description = ?, amount = ?, notes = ? " + 
+        "WHERE post_id = ? " + 
+        "AND user_id = ?"; 
+
+    const values = [edits.entryType, edits.date, edits.category, edits.description, edits.amount, edits.notes, postId, userId]
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
 }

@@ -73,21 +73,20 @@ $(document).ready(function() {
 
     $("#confirmbtn").click(function() {
         if(validate()) {
-            var newExpense = {
+            var newEntry = {
                 entryType: type.find(":selected").val(),
                 date: date.val(),
                 category: category.val(),
                 description: description.val(),
                 amount: amount.val(),
-                notes: notes.val(),
-                ORnumber: ORnum.val()
+                notes: notes.val()
             }
 
-            $.post('add-expense', newExpense, function(data, status) {
-                console.log(data);
+            $.post('add-entry', newEntry, function(response) {
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
             })
-
-            window.open("/", "_self");
         }
     });
 
