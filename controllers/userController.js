@@ -40,7 +40,8 @@ exports.registerUser = async (req, res) => {
 					"error_msg",
 					"Email already in use"
 				);
-				return res.redirect("/signup")
+
+				return res.redirect("/error")
 			} else {
 
 				// check uploaded image first 
@@ -71,8 +72,8 @@ exports.registerUser = async (req, res) => {
 				bcrypt.hash(password, saltRounds, async function(err, hashed) {
 					if (err) {
 						console.error(err);
-						req.flash("error_msg", "Could not create user. Please try again.");
-						return res.redirect("/signup"); // Return here to prevent further execution
+						req.flash("error_msg", "Could not create user. Please try again. \n" + err);
+						return res.redirect("/error"); // Return here to prevent further execution
 					}
 
 					updatedPath = filePath.replace(/^public\\/, "");
@@ -97,8 +98,8 @@ exports.registerUser = async (req, res) => {
 		}
 		catch (err) {
 			console.error(err); 
-			req.flash("error_msg", "Could not create user. Please try again.");
-			return res.redirect("/signup");
+			req.flash("error_msg", "Could not create user. Please try again. \n" + err);
+			return res.redirect("/error");
 
 			// if fail maybe delete from auth table if new user was inserted 
 		}
@@ -108,7 +109,7 @@ exports.registerUser = async (req, res) => {
 		deleteFile(req.file.path)
 
 		req.flash("error_msg", messages.join(" "));
-		return res.redirect("/signup");
+		return res.redirect("/error");
 	}
 };
 
@@ -151,14 +152,17 @@ exports.loginUser = async (req, res) => {
 			}
 		}
 		else {
-			console.error(errors); 
+			console.error(errors);
+			req.flash("error_msg", errors);
+			res.redirect("/error"); 
 		}
 	}
 	catch(err) {
 		handleFailedLogin(req.body.email);
-		req.flash("error_msg", "Something happened! Please try again."); 
+		//req.flash("error_msg", "Something happened! Please try again."); 
 		console.error("Could not log in: ", err);
-		res.redirect("/login"); 
+		req.flash("error_msg", err);
+		res.redirect("/error"); 
 	}
 };
 
@@ -199,8 +203,10 @@ exports.viewAccounts = async (req, res) => {
 		});
 	}
 	catch(error) {
-		console.log("Could not retrieve entries: ", error); 
-		res.redirect("/")
+		//console.log("Could not retrieve entries: ", error); 
+		//res.redirect("/")
+		req.flash("error_msg", error);
+		res.redirect("/error"); 
 	}
 }
 
@@ -211,8 +217,10 @@ exports.getUser = async function (req, res) {
         console.log([user]);
         res.render("view-user", user);
     } catch (error) {
-        console.log("Could not retrieve user: ", error);
-        res.redirect("/");
+        // console.log("Could not retrieve user: ", error);
+        // res.redirect("/");
+		req.flash("error_msg", error);
+		res.redirect("/error"); 
     }
 }
 
@@ -227,8 +235,10 @@ exports.getEditUser = async function (req, res) {
 
 		res.render("edit-user", user)
 	} catch (error) {
-		console.log("Could not retrieve user: ", error);
-		res.redirect("/");
+		// console.log("Could not retrieve user: ", error);
+		// res.redirect("/");
+		req.flash("error_msg", err);
+		res.redirect("/error"); 
 	}
 }
 
@@ -250,8 +260,10 @@ exports.confirmEditUser = async function(req, res) {
 			redirect: redirect
 		});
     } catch (error) {
-    	console.log("Could not edit user: ", error);
-    	res.redirect("/");
+    	// console.log("Could not edit user: ", error);
+    	// res.redirect("/");
+		req.flash("error_msg", error);
+		res.redirect("/error"); 
     }
 }
 
@@ -262,7 +274,9 @@ exports.deleteUser = async function (req, res) {
 		res.redirect('/admin-panel'); 
 	}
 	catch (error) {
-		console.log("Could not delete entry: ", error); 
-		res.redirect('/'); 
+		// console.log("Could not delete entry: ", error); 
+		// res.redirect('/'); 
+		req.flash("error_msg", err);
+		res.redirect("/error"); 	
 	}
 }

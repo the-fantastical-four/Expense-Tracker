@@ -27,6 +27,7 @@ router.get('/captcha', (req, res) => {
 });
 
 router.get('/', isPrivate, controller.getAllEntries);
+router.get('/error', controller.errors);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
 router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, multerErrorHandler, registerValidation, validateCaptcha, userController.registerUser);

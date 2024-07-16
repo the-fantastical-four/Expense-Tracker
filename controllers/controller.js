@@ -47,6 +47,10 @@ exports.newEntry = function (req, res) {
 	res.render("new-entry", { layout: "no-new-entry" })
 }
 
+exports.errors = function (req,res){
+	res.render("error", { layout: "debug-errors" });
+}
+
 // TODO MAKE SCHEMA 
 exports.addEntry = async function(req, res) {
 
