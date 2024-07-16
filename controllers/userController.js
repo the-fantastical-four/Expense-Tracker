@@ -6,7 +6,12 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/antiBruteForce');
 const { checkIfImage } = require('../middlewares/multerConfig')
+const logger = require('../middlewares/logger');
 
+const moment = require('moment-timezone');
+const timezone = moment.tz.guess();
+
+const timestamp = moment().tz(timezone).format();
 
 exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
@@ -30,6 +35,18 @@ exports.registerUser = async (req, res) => {
 					"error_msg",
 					"Email already in use"
 				);
+
+				await logger.log({
+					user: "",
+					timestamp: timestamp,
+					action: "REGISTER",
+					targetPost: "",
+					targetUser: "",
+					result: "ERROR",
+					message: "Email already in use",
+					ip: req.ip
+				});
+
 				return res.redirect("/signup")
 			} else {
 
@@ -45,6 +62,18 @@ exports.registerUser = async (req, res) => {
 							"error_msg", 
 							"Please upload a supported image"
 						);
+
+						await logger.log({
+							user: "",
+							timestamp: timestamp,
+							action: "REGISTER",
+							targetPost: "",
+							targetUser: "",
+							result: "ERROR",
+							message: "Image file not supported",
+							ip: req.ip
+						});
+
 						return res.redirect('/signup');
 					}
 				} else { 
@@ -53,6 +82,18 @@ exports.registerUser = async (req, res) => {
 						"error_msg",
 						"Please upload an image"
 					);
+
+					await logger.log({
+						user: "",
+						timestamp: timestamp,
+						action: "REGISTER",
+						targetPost: "",
+						targetUser: "",
+						result: "ERROR",
+						message: "No file uploaded",
+						ip: req.ip
+					});
+
 					return res.redirect('/signup');
 				}
 
@@ -60,6 +101,18 @@ exports.registerUser = async (req, res) => {
 					if (err) {
 						console.error(err);
 						req.flash("error_msg", "Could not create user. Please try again.");
+
+						await logger.log({
+							user: "",
+							timestamp: timestamp,
+							action: "REGISTER",
+							targetPost: "",
+							targetUser: "",
+							result: "ERROR",
+							message: err,
+							ip: req.ip
+						});
+
 						return res.redirect("/signup"); // Return here to prevent further execution
 					}
 
@@ -75,6 +128,17 @@ exports.registerUser = async (req, res) => {
 
 					await userModel.createUser(user);
 
+					await logger.log({
+						user: "",
+						timestamp: timestamp,
+						action: "REGISTER",
+						targetPost: "",
+						targetUser: "",
+						result: "OK",
+						message: "User registered successfully",
+						ip: req.ip
+					});
+
 					req.flash(
 						"success_msg",
 						"You are now registered! Please login"
@@ -86,6 +150,18 @@ exports.registerUser = async (req, res) => {
 		catch (err) {
 			console.error(err); 
 			req.flash("error_msg", "Could not create user. Please try again.");
+
+			await logger.log({
+				user: "",
+				timestamp: timestamp,
+				action: "REGISTER",
+				targetPost: "",
+				targetUser: "",
+				result: "ERROR",
+				message: err,
+				ip: req.ip
+			});
+
 			return res.redirect("/signup");
 
 			// if fail maybe delete from auth table if new user was inserted 
@@ -94,6 +170,19 @@ exports.registerUser = async (req, res) => {
 		const messages = errors.array().map((item) => item.msg);
 
 		req.flash("error_msg", messages.join(" "));
+
+		await logger.log({
+			user: "",
+			timestamp: timestamp,
+			action: "REGISTER",
+			targetPost: "",
+			targetUser: "",
+			result: "ERROR",
+			message: `Validation errors: ${messages.join(", ")}`,
+			ip: req.ip
+		});
+
+
 		return res.redirect("/signup");
 	}
 };
@@ -122,17 +211,55 @@ exports.loginUser = async (req, res) => {
 						handleSuccessfulLogin(email);
 
 						console.log("Log in success")
+
+						await logger.log({
+							user: id,
+							timestamp: timestamp,
+							action: "LOGIN",
+							targetPost: "",
+							targetUser: "",
+							result: "OK",
+							message: "User logged in successfully",
+							ip: req.ip
+						});
+
+
 						res.redirect("/")
 					}
 					else {
 						handleFailedLogin(email, req, res);
 						req.flash("error_msg", "Login credentials don't match");
+
+						await logger.log({
+							user: "",
+							timestamp: timestamp,
+							action: "LOGIN",
+							targetPost: "",
+							targetUser: "",
+							result: "ERROR",
+							message: "Login Failed - Login credentials don't match",
+							ip: req.ip
+						});
+
 						return res.redirect("/login");
 					}
 				});
 			} else {
 				console.log("User does not exist");
 				req.flash('error_msg', 'User does not exist');
+
+				await logger.log({
+					user: "",
+					timestamp: timestamp,
+					action: "LOGIN",
+					targetPost: "",
+					targetUser: "",
+					result: "ERROR",
+					message: "Login Failed - User does not exist",
+					ip: req.ip
+				});
+
+
 				res.redirect("/login");
 			}
 		}
@@ -144,6 +271,18 @@ exports.loginUser = async (req, res) => {
 		handleFailedLogin(req.body.email);
 		req.flash("error_msg", "Something happened! Please try again."); 
 		console.error("Could not log in: ", err);
+
+		await logger.log({
+			user: "",
+			timestamp: timestamp,
+			action: "LOGIN",
+			targetPost: "",
+			targetUser: "",
+			result: "ERROR",
+			message: "Login Failed",
+			ip: req.ip
+		});
+
 		res.redirect("/login"); 
 	}
 };
@@ -151,31 +290,42 @@ exports.loginUser = async (req, res) => {
 exports.logoutUser = (req, res) => {
 	if (req.session) {
 		if (req.session) {
+			const userId = req.session.userId;
 			req.session.destroy(() => {
 				res.clearCookie('connect.sid');
 				res.redirect('/login');
+			});
+
+			logger.log({
+				user: userId,
+				timestamp: timestamp,
+				action: "LOGOUT",
+				targetPost: "",
+				targetUser: "",
+				result: "OK",
+				message: "Logout Successful",
+				ip: req.ip
 			});
 		}
 	}
 	else {
 		res.redirect('/login'); 
+
+		logger.log({
+			user: "UNKNOWN",
+			timestamp: timestamp,
+			action: "LOGOUT_ATTEMPT_WITHOUT_SESSION",
+			targetPost: "",
+			targetUser: "",
+			result: "FAILED",
+			message: "Logout attempt failed because no session was found",
+			ip: req.ip
+		});
 	}
 };
 
 // TODO: Change this to actually render all account information 
 exports.viewAccounts = async (req, res) => {
-	// just a dummy
-
-	/*
-	const entries = await userModel.getAllAccounts(); 
-
-	res.render(
-		"admin-panel", {
-			"account-entry": entries
-		}
-	)
-		*/
-
 	try {
 		entries = await userModel.getAllAccounts();;
 

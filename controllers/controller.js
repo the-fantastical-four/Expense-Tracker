@@ -2,7 +2,6 @@
 const postModel = require("../database/models/Post");
 const userModel = require("../database/models/User")
 const logger = require('../middlewares/logger');
-const path = require('path');
 
 const moment = require('moment-timezone');
 const timezone = moment.tz.guess();
