@@ -6,8 +6,12 @@ const svgCaptcha = require('svg-captcha');
 const { validateCaptcha, trackFailedAttempts } = require('../middlewares/validateCaptcha.js');
 const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
+const logger = require('../middlewares/logger');
 
 const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce');
+const fs = require('fs');
+const path = require('path');
+
 
 
 // ROUTES
@@ -25,6 +29,8 @@ router.get('/captcha', (req, res) => {
     res.type('svg');
     res.status(200).send(captcha.data);
 });
+
+router.post('/log', (req, res) => logger.logRequest(req, res));
 
 router.get('/', isPrivate, controller.getAllEntries);
 router.get('/login', isPublic, controller.login);
