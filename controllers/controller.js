@@ -25,7 +25,7 @@ exports.getAllEntries = async function (req, res) {
 
 exports.getEntry = async function (req, res) {
 	try {
-		[entry] = await postModel.getById(req.query.id);
+		[entry] = await postModel.getById(req.query.id, req.session.userId);
 		
 		if(entry === undefined) {
 			throw new Error('Entry does not exist'); 
@@ -107,7 +107,7 @@ exports.addEntry = async function(req, res) {
 exports.deleteEntry = async function (req, res) {
 	var entryID = req.query.id;
 	try {
-		await postModel.deleteEntry(entryID);
+		await postModel.deleteEntry(entryID, req.session.userId);
 
 		// Log the action
         await logger.log({
@@ -145,7 +145,7 @@ exports.deleteEntry = async function (req, res) {
 
 exports.getEditEntry = async function (req, res) {
 	try {
-		[entry] = await postModel.getById(req.query.id);
+		[entry] = await postModel.getById(req.query.id, req.session.userId);
 
 		if(entry === undefined) {
 			throw new Error('Could not find entry'); 
@@ -169,14 +169,14 @@ exports.confirmEditEntry = async function(req, res) {
     }
 
 	const entryId = req.body.id; 
-	
+	const userId = req.session.userId; 
 
     try {
-    	await postModel.editEntry(entryId, newEdits);
+    	await postModel.editEntry(entryId, userId, newEdits);
 
 		// Log the action
         await logger.log({
-            user: req.session.userId,
+            user: userId,
             timestamp: timestamp,
             action: "EDIT_ENTRY",
             targetPost: entryId,

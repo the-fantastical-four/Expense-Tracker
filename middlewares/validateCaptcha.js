@@ -5,6 +5,7 @@ const timezone = moment.tz.guess();
 
 const timestamp = moment().tz(timezone).format();
 
+const fs = require('fs')
 
 function validateCaptcha(req, res, next) {
     const userCaptcha = req.body.captcha;
@@ -42,6 +43,13 @@ function validateCaptcha(req, res, next) {
                 ip: req.ip
             });
         }
+
+        fs.unlink(req.file.path, (err) => {
+            if (err) {
+                console.error('Failed to delete invalid file:', err);
+            }
+        });
+        
         res.redirect('/signup');
     }
 }
