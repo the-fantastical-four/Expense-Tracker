@@ -7,6 +7,16 @@ const saltRounds = 10;
 const { handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/antiBruteForce');
 const { checkIfImage } = require('../middlewares/multerConfig')
 
+const fs = require('fs'); 
+
+function deleteFile(filePath) {
+	fs.unlink(filePath, (err) => {
+		if (err) {
+			console.error('Failed to delete invalid file:', err);
+		}
+	});
+}
+
 
 exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
@@ -41,6 +51,8 @@ exports.registerUser = async (req, res) => {
 					
 					if(!checkIfImage(filePath)) {
 						// TODO: add delete file here 
+						deleteFile(filePath); 
+
 						req.flash(
 							"error_msg", 
 							"Please upload a supported image"
@@ -92,6 +104,8 @@ exports.registerUser = async (req, res) => {
 		}
 	} else {
 		const messages = errors.array().map((item) => item.msg);
+		
+		deleteFile(req.file.path)
 
 		req.flash("error_msg", messages.join(" "));
 		return res.redirect("/signup");
@@ -165,6 +179,8 @@ exports.logoutUser = (req, res) => {
 // TODO: Change this to actually render all account information 
 exports.viewAccounts = async (req, res) => {
 	// just a dummy
+
+	/*
 	const entries = await userModel.getAllAccounts(); 
 
 	res.render(
@@ -172,4 +188,81 @@ exports.viewAccounts = async (req, res) => {
 			"account-entry": entries
 		}
 	)
+		*/
+
+	try {
+		entries = await userModel.getAllAccounts();;
+
+		res.render(
+			"admin-panel", {
+			"account-entry": entries
+		});
+	}
+	catch(error) {
+		console.log("Could not retrieve entries: ", error); 
+		res.redirect("/")
+	}
+}
+
+exports.getUser = async function (req, res) {
+	try {
+        const userId = req.query.id;
+        const [user] = await userModel.getAccountEntry(userId);
+        console.log([user]);
+        res.render("view-user", user);
+    } catch (error) {
+        console.log("Could not retrieve user: ", error);
+        res.redirect("/");
+    }
+}
+
+exports.getEditUser = async function (req, res) {
+	try {
+		const userId = req.query.id;
+		const [user] = await userModel.getAccountEntry(userId);
+
+		if(user === undefined) {
+			throw new Error('Could not find entry'); 
+		}
+
+		res.render("edit-user", user)
+	} catch (error) {
+		console.log("Could not retrieve user: ", error);
+		res.redirect("/");
+	}
+}
+
+exports.confirmEditUser = async function(req, res) {
+    var newEdits = {
+        full_name: req.body.full_name,
+        email: req.body.email,
+        phone_number: req.body.phone_number
+    }
+
+	console.log("email:", newEdits.email);
+
+	const userId = req.body.id; 
+
+    try {
+    	await userModel.editUser(userId, newEdits);
+		const redirect = '/view/user?id=' + userId;
+		return res.json({
+			redirect: redirect
+		});
+    } catch (error) {
+    	console.log("Could not edit user: ", error);
+    	res.redirect("/");
+    }
+}
+
+exports.deleteUser = async function (req, res) {
+	var userId = req.query.id;
+	try {
+		await userModel.deleteUser(userId);
+		res.redirect('/admin-panel'); 
+	}
+	catch (error) {
+		console.log("Could not delete entry: ", error); 
+		res.redirect('/'); 
+	}
 }

@@ -2,6 +2,8 @@ const supabase = require('../../supabaseClient')
 const mysql = require('mysql2/promise'); 
 const { dbConfig } = require('../../config'); 
 
+const normalizePath = (path) => path.replace(/\\/g, '/');
+
 exports.createUser = async function (data) {
     const connection = await mysql.createConnection(dbConfig);
     const {
@@ -102,6 +104,26 @@ exports.getAccountId = async function(email) {
     }
 }
 
+exports.getAccountEntry = async function(user_id) {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    try {
+        const [results] = await connection.query('SELECT * FROM accounts WHERE user_id = ?', [user_id]); 
+        if (results.length > 0) {
+            results[0].profile_picture = normalizePath(results[0].profile_picture);
+        }
+        return results; 
+    }
+    catch(error) {
+        console.log(error); 
+        throw error; 
+    }
+    finally {
+        await connection.end();
+    }
+}
+
+
 exports.getAllAccounts = async function() {
     const connection = await mysql.createConnection(dbConfig);
 
@@ -150,6 +172,41 @@ exports.isBlacklisted = async function(ipAddress) {
         return results[0].num;
     } catch (error) {
         console.error(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
+
+exports.editUser = async function(user_id, edits) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    const sql = 
+        "UPDATE accounts " +
+        "SET full_name = ?, email = ?, phone_number = ? " + 
+        "WHERE user_id = ?"; 
+
+    const values = [edits.full_name, edits.email, edits.phone_number, user_id]
+
+    try {
+        const [results] = await connection.query(sql, values);
+        return results;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await connection.end();
+    }
+}
+
+exports.deleteUser = async function(user_id) {
+    const connection = await mysql.createConnection(dbConfig);
+
+    try {
+        const [results] = await connection.query('DELETE FROM accounts WHERE user_id = ?', [user_id]);
+        return results;
+    } catch (error) {
+        console.log(error);
         throw error;
     } finally {
         await connection.end();

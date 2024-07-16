@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="/css/editentrystyle.css">
+<script src="/scripts/edit-user.js"></script>
+
+<section>
+    <div id="infoinput">
+        <img src="/{{profile_picture}}" alt="User Image"><br>
+        <h2>Name:</h2>
+        <input id="full_name" name="full_name" type="text" value="{{full_name}}" placeholder="Name"><br>
+        <div id="full_name_error" display="none" class="error-message"></div><br>
+
+        <h2>Email:</h2>
+        <input id="email" name="email" type="email" value="{{email}}" placeholder="Email"><br>
+        <div id="email_error" display="none"  class="error-message"></div><br>
+
+        <h2>Phone:</h2>
+        <input id="phone_number" name="phone_number" type="tel" value="{{phone_number}}" placeholder="Phone">
+        <div id="phone_error" display="none" class="error-message"></div>
+    </div>
+   
+    <div id="buttons">
+        <button id="confirmbtn" value="{{user_id}}" type="button">Confirm</button>
+        <button id="cancelbtn" onclick="history.back()">Cancel</button>
+    </div>
+</section>
