@@ -7,6 +7,16 @@ const saltRounds = 10;
 const { handleFailedLogin, handleSuccessfulLogin } = require('../middlewares/antiBruteForce');
 const { checkIfImage } = require('../middlewares/multerConfig')
 
+const fs = require('fs'); 
+
+function deleteFile(filePath) {
+	fs.unlink(filePath, (err) => {
+		if (err) {
+			console.error('Failed to delete invalid file:', err);
+		}
+	});
+}
+
 
 exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
@@ -41,6 +51,8 @@ exports.registerUser = async (req, res) => {
 					
 					if(!checkIfImage(filePath)) {
 						// TODO: add delete file here 
+						deleteFile(filePath); 
+
 						req.flash(
 							"error_msg", 
 							"Please upload a supported image"
@@ -92,6 +104,8 @@ exports.registerUser = async (req, res) => {
 		}
 	} else {
 		const messages = errors.array().map((item) => item.msg);
+		
+		deleteFile(req.file.path)
 
 		req.flash("error_msg", messages.join(" "));
 		return res.redirect("/signup");
