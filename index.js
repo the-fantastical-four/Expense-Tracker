@@ -25,29 +25,16 @@ const mysql = require('mysql2');
 const connection = mysql.createConnection(dbConfig); 
 const sessionStore = new MySQLStore({}, connection); 
 
-// init server port
-//const port = 3000; 
-
 const options = {
     key: fs.readFileSync(path.join(__dirname, 'certs', 'server.key')),
     cert: fs.readFileSync(path.join(__dirname, 'certs', 'server.crt')),
 };
 
-  
-//var PORT = envPort || 3000;
-// var server = app.listen(PORT, function () {
-//     console.log("Listening at port " + PORT + "...");
-// });
 
-https.createServer(options, app).listen(3000, () => {
-    console.log('Run on https://localhost:3000');
- });
+https.createServer(options, app).listen(envPort || 3000, () => {
+    console.log(`Run on https://localhost:${envPort || 3000}`);
+});
   
-// const options = {
-//     useNewURLParser: true, 
-//     useUnifiedTopology: true
-// }
-
 // Initialize data and static folder 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })) 
