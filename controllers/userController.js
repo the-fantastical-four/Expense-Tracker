@@ -376,27 +376,78 @@ exports.confirmEditUser = async function(req, res) {
     }
 
 	const userId = req.body.id; 
+	const adminUserId = req.session.userId;
 
     try {
     	await userModel.editUser(userId, newEdits);
 		const redirect = '/view/user?id=' + userId;
+
+		logger.log({
+			user: adminUserId,
+			timestamp: timestamp,
+			action: "EDIT_USER",
+			targetPost: "",
+			targetUser: userId,
+			result: "SUCCESS",
+			message: `User with ID ${userId} was successfully edited by admin with ID ${adminUserId}`,
+			ip: req.ip
+		});
+
 		return res.json({
 			redirect: redirect
 		});
     } catch (error) {
     	console.log("Could not edit user: ", error);
+
+		logger.log({
+			user: adminUserId,
+			timestamp: timestamp,
+			action: "EDIT_USER",
+			targetPost: "",
+			targetUser: userId,
+			result: "ERROR",
+			message: `Failed to edit user with ID ${userId} by admin with ID ${adminUserId}`,
+			ip: req.ip
+		});
+
     	res.redirect("/");
     }
 }
 
 exports.deleteUser = async function (req, res) {
-	var userId = req.query.id;
+	const userId = req.query.id;
+    const adminUserId = req.session.userId; // ID of the admin performing the deletion (assuming it's stored in the session)
+
 	try {
 		await userModel.deleteUser(userId);
+
+		logger.log({
+			user: adminUserId,
+			timestamp: timestamp,
+			action: "DELETE_USER",
+			targetPost: "",
+			targetUser: userId,
+			result: "SUCCESS",
+			message: `User with ID ${userId} was successfully deleted by admin with ID ${adminUserId}`,
+			ip: req.ip
+		});
+
 		res.redirect('/admin-panel'); 
 	}
 	catch (error) {
 		console.log("Could not delete entry: ", error); 
+
+		logger.log({
+            user: adminUserId,
+            timestamp: timestamp,
+            action: "DELETE_USER",
+            targetPost: "",
+            targetUser: userId,
+            result: "FAILED",
+            message: `Failed to delete user with ID ${userId} by admin with ID ${adminUserId}`,
+            ip: req.ip
+        });
+
 		res.redirect('/'); 
 	}
 }

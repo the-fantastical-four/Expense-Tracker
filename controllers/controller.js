@@ -113,7 +113,7 @@ exports.deleteEntry = async function (req, res) {
         await logger.log({
             user: req.session.userId,
             timestamp: timestamp,
-            action: "DELETE",
+            action: "DELETE_ENTRY",
             targetPost: entryID,
             targetUser: "",
             result: "OK",
@@ -131,7 +131,7 @@ exports.deleteEntry = async function (req, res) {
         await logger.log({
             user: req.session.userId,
             timestamp: timestamp,
-            action: "DELETE",
+            action: "DELETE_ENTRY",
             targetPost: entryID,
             targetUser: "",
             result: "ERROR",
@@ -178,7 +178,7 @@ exports.confirmEditEntry = async function(req, res) {
         await logger.log({
             user: req.session.userId,
             timestamp: timestamp,
-            action: "EDIT",
+            action: "EDIT_ENTRY",
             targetPost: entryId,
             targetUser: "",
             result: "OK",
@@ -198,7 +198,7 @@ exports.confirmEditEntry = async function(req, res) {
         await logger.log({
             user: req.session.userId,
             timestamp: timestamp,
-            action: "EDIT",
+            action: "EDIT_ENTRY",
             targetPost: entryId,
             targetUser: "",
             result: "ERROR",
