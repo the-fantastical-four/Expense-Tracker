@@ -18,7 +18,7 @@ function deleteFile(filePath) {
 }
 
 
-exports.registerUser = async (req, res) => {
+exports.registerUser = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (errors.isEmpty()) {
@@ -72,8 +72,9 @@ exports.registerUser = async (req, res) => {
 				bcrypt.hash(password, saltRounds, async function(err, hashed) {
 					if (err) {
 						console.error(err);
-						req.flash("error_msg", "Could not create user. Please try again. \n" + err);
-						return res.redirect("/error"); // Return here to prevent further execution
+						// req.flash("error_msg", "Could not create user. Please try again. \n" + err);
+						// return res.redirect("/error"); // Return here to prevent further execution
+						next(err)
 					}
 
 					updatedPath = filePath.replace(/^public\\/, "");
@@ -98,8 +99,9 @@ exports.registerUser = async (req, res) => {
 		}
 		catch (err) {
 			console.error(err); 
-			req.flash("error_msg", "Could not create user. Please try again. \n" + err);
-			return res.redirect("/error");
+			// req.flash("error_msg", "Could not create user. Please try again. \n" + err);
+			// return res.redirect("/error");
+			next(err)
 
 			// if fail maybe delete from auth table if new user was inserted 
 		}
@@ -109,7 +111,7 @@ exports.registerUser = async (req, res) => {
 		deleteFile(req.file.path)
 
 		req.flash("error_msg", messages.join(" "));
-		return res.redirect("/error");
+		return res.redirect("/signup");
 	}
 };
 
@@ -141,28 +143,22 @@ exports.loginUser = async (req, res) => {
 					}
 					else {
 						handleFailedLogin(email, req, res);
-						req.flash("error_msg", "Login credentials don't match");
+						req.flash("error_msg", "Email and/or password does not match");
 						return res.redirect("/login");
 					}
 				});
 			} else {
-				console.log("User does not exist");
-				req.flash('error_msg', 'User does not exist');
+				req.flash('error_msg', 'Email and/or password does not match');
 				res.redirect("/login");
 			}
 		}
 		else {
-			console.error(errors);
-			req.flash("error_msg", errors);
-			res.redirect("/error"); 
+			next(errors); 
 		}
 	}
 	catch(err) {
 		handleFailedLogin(req.body.email);
-		//req.flash("error_msg", "Something happened! Please try again."); 
-		console.error("Could not log in: ", err);
-		req.flash("error_msg", err);
-		res.redirect("/error"); 
+		next(err)
 	}
 };
 
@@ -181,7 +177,7 @@ exports.logoutUser = (req, res) => {
 };
 
 // TODO: Change this to actually render all account information 
-exports.viewAccounts = async (req, res) => {
+exports.viewAccounts = async (req, res, next) => {
 	// just a dummy
 
 	/*
@@ -203,28 +199,22 @@ exports.viewAccounts = async (req, res) => {
 		});
 	}
 	catch(error) {
-		//console.log("Could not retrieve entries: ", error); 
-		//res.redirect("/")
-		req.flash("error_msg", error);
-		res.redirect("/error"); 
+		next(error)
 	}
 }
 
-exports.getUser = async function (req, res) {
+exports.getUser = async function (req, res, next) {
 	try {
         const userId = req.query.id;
         const [user] = await userModel.getAccountEntry(userId);
         console.log([user]);
         res.render("view-user", user);
     } catch (error) {
-        // console.log("Could not retrieve user: ", error);
-        // res.redirect("/");
-		req.flash("error_msg", error);
-		res.redirect("/error"); 
+		next(error)
     }
 }
 
-exports.getEditUser = async function (req, res) {
+exports.getEditUser = async function (req, res, next) {
 	try {
 		const userId = req.query.id;
 		const [user] = await userModel.getAccountEntry(userId);
@@ -235,14 +225,11 @@ exports.getEditUser = async function (req, res) {
 
 		res.render("edit-user", user)
 	} catch (error) {
-		// console.log("Could not retrieve user: ", error);
-		// res.redirect("/");
-		req.flash("error_msg", err);
-		res.redirect("/error"); 
+		next(error)
 	}
 }
 
-exports.confirmEditUser = async function(req, res) {
+exports.confirmEditUser = async function(req, res, next) {
     var newEdits = {
         full_name: req.body.full_name,
         email: req.body.email,
@@ -260,23 +247,17 @@ exports.confirmEditUser = async function(req, res) {
 			redirect: redirect
 		});
     } catch (error) {
-    	// console.log("Could not edit user: ", error);
-    	// res.redirect("/");
-		req.flash("error_msg", error);
-		res.redirect("/error"); 
+    	next(error)
     }
 }
 
-exports.deleteUser = async function (req, res) {
+exports.deleteUser = async function (req, res, next) {
 	var userId = req.query.id;
 	try {
 		await userModel.deleteUser(userId);
 		res.redirect('/admin-panel'); 
 	}
 	catch (error) {
-		// console.log("Could not delete entry: ", error); 
-		// res.redirect('/'); 
-		req.flash("error_msg", err);
-		res.redirect("/error"); 	
+		next(error) 	
 	}
 }

@@ -86,6 +86,9 @@ $(document).ready(function() {
                 if (response.redirect) {
                     window.location.href = response.redirect;
                 }
+                else {
+                    $('body').html(response);
+                }
             });
         }
 

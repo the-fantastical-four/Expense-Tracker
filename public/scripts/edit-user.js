@@ -66,6 +66,9 @@ $(document).ready(function() {
                 if (response.redirect) {
                     window.location.href = response.redirect;
                 }
+                else {
+                    $('body').html(response)
+                }
             });
         } else {
         console.log("Validation failed. Errors are displayed.");
