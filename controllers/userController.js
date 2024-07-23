@@ -115,7 +115,7 @@ exports.registerUser = async (req, res, next) => {
 	}
 };
 
-exports.loginUser = async (req, res) => {
+exports.loginUser = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	try {
@@ -153,7 +153,9 @@ exports.loginUser = async (req, res) => {
 			}
 		}
 		else {
-			next(errors); 
+			const messages = errors.array().map((item) => item.msg);
+			req.flash('error_msg', messages); 
+			res.redirect("/login"); 
 		}
 	}
 	catch(err) {
