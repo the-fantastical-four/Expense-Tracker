@@ -12,7 +12,7 @@ const fs = require('fs');
 function deleteFile(filePath) {
 	fs.unlink(filePath, (err) => {
 		if (err) {
-			console.error('Failed to delete invalid file:', err);
+			next(error);
 		}
 	});
 }
@@ -35,13 +35,12 @@ exports.registerUser = async (req, res, next) => {
 			emailExists = await userModel.checkEmailExists(email); 
 
 			if (emailExists) {
-				console.log('Email already in use.');
 				req.flash(
 					"error_msg",
 					"Email already in use"
 				);
 
-				return res.redirect("/error")
+				return res.redirect("/signup")
 			} else {
 
 				// check uploaded image first 
@@ -61,7 +60,6 @@ exports.registerUser = async (req, res, next) => {
 						return res.redirect('/signup');
 					}
 				} else { 
-					console.error('Error: No file uploaded');
 					req.flash(
 						"error_msg",
 						"Please upload an image"
@@ -71,9 +69,6 @@ exports.registerUser = async (req, res, next) => {
 
 				bcrypt.hash(password, saltRounds, async function(err, hashed) {
 					if (err) {
-						console.error(err);
-						// req.flash("error_msg", "Could not create user. Please try again. \n" + err);
-						// return res.redirect("/error"); // Return here to prevent further execution
 						next(err)
 					}
 
@@ -98,9 +93,6 @@ exports.registerUser = async (req, res, next) => {
 			}
 		}
 		catch (err) {
-			console.error(err); 
-			// req.flash("error_msg", "Could not create user. Please try again. \n" + err);
-			// return res.redirect("/error");
 			next(err)
 
 			// if fail maybe delete from auth table if new user was inserted 
@@ -138,7 +130,6 @@ exports.loginUser = async (req, res, next) => {
 
 						handleSuccessfulLogin(email);
 
-						console.log("Log in success")
 						res.redirect("/")
 					}
 					else {
@@ -209,7 +200,6 @@ exports.getUser = async function (req, res, next) {
 	try {
         const userId = req.query.id;
         const [user] = await userModel.getAccountEntry(userId);
-        console.log([user]);
         res.render("view-user", user);
     } catch (error) {
 		next(error)
@@ -238,7 +228,6 @@ exports.confirmEditUser = async function(req, res, next) {
         phone_number: req.body.phone_number
     }
 
-	console.log("email:", newEdits.email);
 
 	const userId = req.body.id; 
 

@@ -18,7 +18,7 @@ function validateCaptcha(req, res, next) {
 
         fs.unlink(req.file.path, (err) => {
             if (err) {
-                console.error('Failed to delete invalid file:', err);
+                console.error('Failed to accomodate change');
             }
         });
         

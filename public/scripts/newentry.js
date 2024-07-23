@@ -30,16 +30,24 @@ $(document).ready(function() {
 
     // validates if required fields have inputs 
     function validate() {
-        // check if description is empty 
+        // check if notes is empty 
         var isValid = true;
 
-        // check description
         if(description.val() == "") {
             setError(description);
             isValid = false;
         }
         else {
             setDefault(description);
+        }
+
+        // check notes
+        if(notes.val() == "") {
+            setError(notes);
+            isValid = false;
+        }
+        else {
+            setDefault(notes);
         }
 
         // check category
@@ -64,6 +72,10 @@ $(document).ready(function() {
             setError(type);
             isValid = false;
         }
+        else if (type.val() !== "Expense" && type.val() !== "Income") {
+            setError(type);
+            isValid = false;
+        }
         else {
             setDefault(type);
         }
@@ -76,10 +88,11 @@ $(document).ready(function() {
             var newEntry = {
                 entryType: type.find(":selected").val(),
                 date: date.val(),
-                category: category.val(),
-                description: description.val(),
-                amount: amount.val(),
-                notes: notes.val()
+                category: category.val(category.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '')),
+                description: description.val(description.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '')),
+                amount: amount.val(amount.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '')),
+                notes: notes.val(notes.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, ''))
+
             }
 
             $.post('add-entry', newEntry, function(response) {

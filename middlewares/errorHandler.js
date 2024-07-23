@@ -1,5 +1,4 @@
 function errorHandler(err, req, res, next) {
-    console.error(err); 
     if(process.env.MODE === 'DEBUG') {
         req.flash('error_msg', `Error: ${err.stack}`);
     }
