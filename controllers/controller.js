@@ -1,11 +1,15 @@
 // import database stuff
 const postModel = require("../database/models/Post");
 const userModel = require("../database/models/User")
-const path = require('path');
-const { ObjectId } = require('mongodb');
+const logger = require('../middlewares/logger');
+
+const moment = require('moment-timezone');
+const timezone = moment.tz.guess();
+
+const timestamp = moment().tz(timezone).format();
+
 
 exports.getAllEntries = async function (req, res) {
-
 	try {
 		entries = await postModel.getAllEntries(req.session.userId);
 
@@ -65,12 +69,36 @@ exports.addEntry = async function(req, res) {
 
 	try {
 		await postModel.createEntry(entry);
+
+		await logger.log({
+            user: req.session.userId,
+            timestamp: timestamp,
+            action: "CREATE",
+            targetPost: "",
+            targetUser: "",
+            result: "OK",
+            message: "Entry created successfully",
+            ip: req.ip
+        });
 		const redirect = '/'; 
 		return res.json({
 			redirect: redirect
 		});
 	} catch(error) {
 		console.log("Could not create entry: ", error); 
+
+		// Log the error
+        await logger.log({
+            user: req.session.userId,
+            timestamp: timestamp,
+            action: "CREATE",
+            targetPost: "",
+            targetUser: "",
+            result: "ERROR",
+            message: error.message,
+            ip: req.ip
+        });
+
 		res.redirect("/")
 	}
 }
@@ -79,10 +107,37 @@ exports.deleteEntry = async function (req, res) {
 	var entryID = req.query.id;
 	try {
 		await postModel.deleteEntry(entryID, req.session.userId);
+
+		// Log the action
+        await logger.log({
+            user: req.session.userId,
+            timestamp: timestamp,
+            action: "DELETE_ENTRY",
+            targetPost: entryID,
+            targetUser: "",
+            result: "OK",
+            message: "Entry deleted successfully",
+            ip: req.ip
+        });
+
+
 		res.redirect('/'); 
 	}
 	catch (error) {
 		console.log("Could not delete entry: ", error); 
+
+		// Log the error
+        await logger.log({
+            user: req.session.userId,
+            timestamp: timestamp,
+            action: "DELETE_ENTRY",
+            targetPost: entryID,
+            targetUser: "",
+            result: "ERROR",
+            message: error.message,
+            ip: req.ip
+        });
+
 		res.redirect('/'); 
 	}
 }
@@ -117,12 +172,40 @@ exports.confirmEditEntry = async function(req, res) {
 
     try {
     	await postModel.editEntry(entryId, userId, newEdits);
+
+		// Log the action
+        await logger.log({
+            user: userId,
+            timestamp: timestamp,
+            action: "EDIT_ENTRY",
+            targetPost: entryId,
+            targetUser: "",
+            result: "OK",
+            message: "Entry edited successfully",
+            ip: req.ip
+        });
+
+
 		const redirect = '/view/entry?id=' + entryId;
 		return res.json({
 			redirect: redirect
 		});
     } catch (error) {
     	console.log("Could not edit entry: ", error);
+
+		// Log the error
+        await logger.log({
+            user: req.session.userId,
+            timestamp: timestamp,
+            action: "EDIT_ENTRY",
+            targetPost: entryId,
+            targetUser: "",
+            result: "ERROR",
+            message: error.message,
+            ip: req.ip
+        });
+
+
     	res.redirect("/");
     }
 }
