@@ -53,6 +53,7 @@ exports.newEntry = function (req, res) {
 
 // TODO MAKE SCHEMA 
 exports.addEntry = async function(req, res) {
+
 	var entry = {
 		// entryType is the name attr, and entrytype is id attr in hbs file
 		// for some reason if element is a selection, it needs name attribute instead of id
@@ -69,7 +70,6 @@ exports.addEntry = async function(req, res) {
 	try {
 		await postModel.createEntry(entry);
 
-
 		await logger.log({
             user: req.session.userId,
             timestamp: timestamp,
@@ -80,7 +80,6 @@ exports.addEntry = async function(req, res) {
             message: "Entry created successfully",
             ip: req.ip
         });
-
 		const redirect = '/'; 
 		return res.json({
 			redirect: redirect

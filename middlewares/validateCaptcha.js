@@ -4,7 +4,6 @@ const moment = require('moment-timezone');
 const timezone = moment.tz.guess();
 
 const timestamp = moment().tz(timezone).format();
-
 const fs = require('fs')
 
 function validateCaptcha(req, res, next) {

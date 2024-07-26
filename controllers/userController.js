@@ -22,6 +22,16 @@ function deleteFile(filePath) {
 	});
 }
 
+const fs = require('fs'); 
+
+function deleteFile(filePath) {
+	fs.unlink(filePath, (err) => {
+		if (err) {
+			console.error('Failed to delete invalid file:', err);
+		}
+	});
+}
+
 
 exports.registerUser = async (req, res) => {
 	const errors = validationResult(req);
@@ -341,6 +351,43 @@ exports.logoutUser = (req, res) => {
 // TODO: Change this to actually render all account information 
 exports.viewAccounts = async (req, res) => {
 	try {
+		entries = await userModel.getAllAccounts();
+
+		res.render(
+			"admin-panel", {
+			"account-entry": entries
+		});
+	}
+	catch(error) {
+		console.log("Could not retrieve entries: ", error); 
+		res.redirect("/")
+	}
+}
+
+exports.getUser = async function (req, res) {
+	try {
+        const userId = req.query.id;
+        const [user] = await userModel.getAccountEntry(userId);
+        console.log([user]);
+        res.render("view-user", user);
+    } catch (error) {
+        console.log("Could not retrieve user: ", error);
+        res.redirect("/");
+    }
+}
+
+exports.getEditUser = async function (req, res) {
+	try {
+		const userId = req.query.id;
+		const [user] = await userModel.getAccountEntry(userId);
+
+		if(user === undefined) {
+			throw new Error('Could not find entry'); 
+		}
+	)
+		*/
+
+	try {
 		entries = await userModel.getAllAccounts();;
 
 		res.render(
@@ -408,7 +455,7 @@ exports.confirmEditUser = async function(req, res) {
 			message: `User with ID ${userId} was successfully edited by admin with ID ${adminUserId}`,
 			ip: req.ip
 		});
-
+      
 		return res.json({
 			redirect: redirect
 		});
@@ -447,7 +494,7 @@ exports.deleteUser = async function (req, res) {
 			message: `User with ID ${userId} was successfully deleted by admin with ID ${adminUserId}`,
 			ip: req.ip
 		});
-
+    
 		res.redirect('/admin-panel'); 
 	}
 	catch (error) {
