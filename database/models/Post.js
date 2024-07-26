@@ -10,7 +10,6 @@ exports.getAllEntries = async function(userId) {
         const [results] = await connection.query('SELECT * FROM posts WHERE user_id = ?', [userId]);
         return results;
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();
@@ -42,7 +41,6 @@ exports.createEntry = async function(entry) {
         const [results] = await connection.query(sql, values);
         return [results];
     } catch (error) {
-        console.error(error);
         throw error;
     } finally {
         await connection.end();
@@ -59,7 +57,6 @@ exports.getById = async function(postId, userId) {
         const [results] = await connection.query(sql, values);
         return results;
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();
@@ -73,7 +70,6 @@ exports.deleteEntry = async function(postId, userId) {
         const [results] = await connection.query('DELETE FROM posts WHERE post_id = ? AND user_id = ?', [postId, userId]);
         return results;
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();
@@ -95,7 +91,6 @@ exports.editEntry = async function(postId, userId, edits) {
         const [results] = await connection.query(sql, values);
         return results;
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();

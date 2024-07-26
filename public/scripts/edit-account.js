@@ -69,11 +69,6 @@ $(document).ready(function() {
             username: $("#username").val()
         }
 
-        console.log(edits);
-
-        $.post('/account/edit/confirm', edits, function(data, status) {
-            console.log(data);
-        });
 
     });
 });

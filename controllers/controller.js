@@ -8,8 +8,7 @@ const timezone = moment.tz.guess();
 
 const timestamp = moment().tz(timezone).format();
 
-
-exports.getAllEntries = async function (req, res) {
+exports.getAllEntries = async function (req, res, next) {
 	try {
 		entries = await postModel.getAllEntries(req.session.userId);
 
@@ -18,12 +17,11 @@ exports.getAllEntries = async function (req, res) {
 		});
 	}
 	catch(error) {
-		console.log("Could not retrieve entries: ", error); 
-		res.redirect("/")
+		next(error)
 	}
 }
 
-exports.getEntry = async function (req, res) {
+exports.getEntry = async function (req, res, next) {
 	try {
 		[entry] = await postModel.getById(req.query.id, req.session.userId);
 		
@@ -34,25 +32,28 @@ exports.getEntry = async function (req, res) {
 		res.render("view-entry", entry)
 	}
 	catch(error) {
-		console.log("Could not retrieve entry: ", error); 
-		res.redirect("/");
+		next(error); 
 	}
 }
 
-exports.login = function (req, res) {
+exports.login = function (req, res, next) {
 	res.render("login", { layout: "login-layout" });
 }
 
-exports.signup = function (req, res) {
+exports.signup = function (req, res, next) {
 	res.render("signup", { layout: "login-layout" });
 }
 
-exports.newEntry = function (req, res) {
+exports.newEntry = function (req, res, next) {
 	res.render("new-entry", { layout: "no-new-entry" })
 }
 
+exports.errors = function (req, res, next){
+	res.render("error", { layout: "debug-errors" });
+}
+
 // TODO MAKE SCHEMA 
-exports.addEntry = async function(req, res) {
+exports.addEntry = async function(req, res, next) {
 
 	var entry = {
 		// entryType is the name attr, and entrytype is id attr in hbs file
@@ -85,25 +86,11 @@ exports.addEntry = async function(req, res) {
 			redirect: redirect
 		});
 	} catch(error) {
-		console.log("Could not create entry: ", error); 
-
-		// Log the error
-        await logger.log({
-            user: req.session.userId,
-            timestamp: timestamp,
-            action: "CREATE",
-            targetPost: "",
-            targetUser: "",
-            result: "ERROR",
-            message: error.message,
-            ip: req.ip
-        });
-
-		res.redirect("/")
+      next(error)
 	}
 }
 
-exports.deleteEntry = async function (req, res) {
+exports.deleteEntry = async function (req, res, next) {
 	var entryID = req.query.id;
 	try {
 		await postModel.deleteEntry(entryID, req.session.userId);
@@ -124,25 +111,11 @@ exports.deleteEntry = async function (req, res) {
 		res.redirect('/'); 
 	}
 	catch (error) {
-		console.log("Could not delete entry: ", error); 
-
-		// Log the error
-        await logger.log({
-            user: req.session.userId,
-            timestamp: timestamp,
-            action: "DELETE_ENTRY",
-            targetPost: entryID,
-            targetUser: "",
-            result: "ERROR",
-            message: error.message,
-            ip: req.ip
-        });
-
-		res.redirect('/'); 
+    next(error)
 	}
 }
 
-exports.getEditEntry = async function (req, res) {
+exports.getEditEntry = async function (req, res, next) {
 	try {
 		[entry] = await postModel.getById(req.query.id, req.session.userId);
 
@@ -152,12 +125,11 @@ exports.getEditEntry = async function (req, res) {
 
 		res.render("edit-entry", entry)
 	} catch (error) {
-		console.log("Could not retrieve entry: ", error);
-		res.redirect("/");
+		next(error)
 	}
 }
 
-exports.confirmEditEntry = async function(req, res) {
+exports.confirmEditEntry = async function(req, res, next) {
     var newEdits = {
         entryType: req.body.entryType,
         date: req.body.date,
@@ -191,21 +163,6 @@ exports.confirmEditEntry = async function(req, res) {
 			redirect: redirect
 		});
     } catch (error) {
-    	console.log("Could not edit entry: ", error);
-
-		// Log the error
-        await logger.log({
-            user: req.session.userId,
-            timestamp: timestamp,
-            action: "EDIT_ENTRY",
-            targetPost: entryId,
-            targetUser: "",
-            result: "ERROR",
-            message: error.message,
-            ip: req.ip
-        });
-
-
-    	res.redirect("/");
+        next(error)
     }
 }

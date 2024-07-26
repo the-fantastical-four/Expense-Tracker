@@ -11,7 +11,7 @@ const logger = require('../middlewares/logger');
 const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce');
 const fs = require('fs');
 const path = require('path');
-
+const errorHandler = require('../middlewares/errorHandler.js')
 
 
 // ROUTES
@@ -30,25 +30,24 @@ router.get('/captcha', (req, res) => {
     res.status(200).send(captcha.data);
 });
 
-router.post('/log', (req, res) => logger.logRequest(req, res));
-
-router.get('/', isPrivate, controller.getAllEntries);
+router.get('/', isPrivate, controller.getAllEntries, errorHandler);
+router.get('/error', controller.errors);
 router.get('/login', isPublic, controller.login);
 router.get('/signup', isPublic, controller.signup);
-router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, multerErrorHandler, registerValidation, validateCaptcha, userController.registerUser);
-router.post('/login', isPublic, loginValidation, isBlacklisted, antiBruteForce, userController.loginUser);
+router.post('/signup', isPublic, isBlacklisted, trackFailedAttempts, upload, multerErrorHandler, registerValidation, validateCaptcha, userController.registerUser, errorHandler);
+router.post('/login', isPublic, loginValidation, isBlacklisted, antiBruteForce, userController.loginUser, errorHandler);
 router.get('/logout', isPrivate, userController.logoutUser);
-router.get('/admin-panel', isAdmin, userController.viewAccounts); // add validator isAdmin to check if user has admin role 
+router.get('/admin-panel', isAdmin, userController.viewAccounts, errorHandler); // add validator isAdmin to check if user has admin role 
 router.get('/new-entry', isPrivate, controller.newEntry); 
-router.post('/add-entry', isPrivate, controller.addEntry); 
-router.get('/view/entry', isPrivate, controller.getEntry);  
-router.get('/delete/entry', isPrivate, controller.deleteEntry);
-router.get('/edit/entry', isPrivate, controller.getEditEntry);
-router.post('/edit/confirm', isPrivate, controller.confirmEditEntry);
-router.get('/view/user', isAdmin, userController.getUser);
-router.get('/edit/user', isAdmin, userController.getEditUser);
-router.post('/edit/confirm-user', isAdmin, userController.confirmEditUser);
-router.get('/delete/user', isAdmin, userController.deleteUser);
+router.post('/add-entry', isPrivate, controller.addEntry, errorHandler); 
+router.get('/view/entry', isPrivate, controller.getEntry, errorHandler);  
+router.get('/delete/entry', isPrivate, controller.deleteEntry, errorHandler);
+router.get('/edit/entry', isPrivate, controller.getEditEntry, errorHandler);
+router.post('/edit/confirm', isPrivate, controller.confirmEditEntry, errorHandler);
+router.get('/view/user', isAdmin, userController.getUser, errorHandler);
+router.get('/edit/user', isAdmin, userController.getEditUser, errorHandler);
+router.post('/edit/confirm-user', isAdmin, userController.confirmEditUser, errorHandler);
+router.get('/delete/user', isAdmin, userController.deleteUser, errorHandler);
 
 
 

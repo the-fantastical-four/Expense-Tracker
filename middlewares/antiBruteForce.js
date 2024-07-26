@@ -49,7 +49,6 @@ function handleFailedLogin(email, req, res) {
         const ip = getIp(req);
 
         userModel.blacklistIp(ip); 
-        console.log(`IP Address ${ip} is now blacklisted`)
     } 
 
     if (user.attempts >= MAX_ATTEMPTS) {

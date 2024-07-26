@@ -55,7 +55,7 @@ app.use(session({
         secure: true, // basically makes cookies secure, only turn on if HTTPS!!! 
         httpOnly: true, // prevent client-side JavaScript from accessing the cookie
         sameSite: 'strict', // helps protect against CSRF attacks
-        maxAge: 60 * 1000 // 1 min
+        maxAge: 60 * 10000 // 1 min
     }, // Set to true in production if using HTTPS 
     store: sessionStore,
 }));

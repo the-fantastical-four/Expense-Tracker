@@ -28,7 +28,6 @@ $(document).ready(function() {
 
         if (full_name.val() == "" || !namePattern.test(full_name.val())) {
             setError(full_name, $("#full_name_error"), "Please provide a valid full name.");
-            console.log("Full name validation failed.");
             isValid = false;
         } else {
             setDefault(full_name, $("#full_name_error"));
@@ -36,7 +35,6 @@ $(document).ready(function() {
 
         if (email.val() == "" || !emailPattern.test(email.val())) {
             setError(email, $("#email_error"), "Please provide a valid email address.");
-            console.log("Email validation failed.");
             isValid = false;
         } else {
             setDefault(email, $("#email_error"));
@@ -44,7 +42,6 @@ $(document).ready(function() {
 
         if (phone_number.val() == "" || !phonePattern.test(phone_number.val())) {
             setError(phone_number, $("#phone_error"), "Please provide a valid phone number.");
-            console.log("Phone number validation failed.");
             isValid = false;
         } else {
             setDefault(phone_number, $("#phone_error"));
@@ -66,13 +63,11 @@ $(document).ready(function() {
                 if (response.redirect) {
                     window.location.href = response.redirect;
                 }
+                else {
+                    $('body').html(response)
+                }
             });
-        } else {
-        console.log("Validation failed. Errors are displayed.");
-        // Optionally, add a general error message if needed
-        //$("#general_error").text("Please correct the highlighted errors.").css("display", "block");
-    }
-    
+        }     
 
     })
 

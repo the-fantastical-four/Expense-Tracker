@@ -13,7 +13,6 @@ $(document).ready(function() {
 
     // get balance 
     $.get('get-total', function(data, status) {
-        console.log(data);
 
         data.forEach((item, i) => {
 
@@ -89,7 +88,7 @@ $(document).ready(function() {
                 var doc = {budgetGoal: newBudget};
 
                 $.get("edit-budget/confirm", doc, function(data, status) {
-                    console.log(data);
+                    console.log("Making an edit...");
                 });
 
                 // if new budget is lesser than total expenses, box turns red 
@@ -136,7 +135,7 @@ $(document).ready(function() {
                 var doc = { savingsGoal: newSavings };
 
                 $.get("edit-savings/confirm", doc, function (data, status) {
-                    console.log(data);
+                    console.log("Making an edit...");
                 });
 
                 // if savings goal is reached or exceeded, box turns green
