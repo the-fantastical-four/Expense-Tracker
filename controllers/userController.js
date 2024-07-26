@@ -17,17 +17,7 @@ const fs = require('fs');
 function deleteFile(filePath) {
 	fs.unlink(filePath, (err) => {
 		if (err) {
-			console.error('Failed to delete invalid file:', err);
-		}
-	});
-}
-
-const fs = require('fs'); 
-
-function deleteFile(filePath) {
-	fs.unlink(filePath, (err) => {
-		if (err) {
-			console.error('Failed to delete invalid file:', err);
+			console.error('Failed to delete invalid file');
 		}
 	});
 }
@@ -384,16 +374,7 @@ exports.getEditUser = async function (req, res) {
 		if(user === undefined) {
 			throw new Error('Could not find entry'); 
 		}
-	)
-		*/
-
-	try {
-		entries = await userModel.getAllAccounts();;
-
-		res.render(
-			"admin-panel", {
-			"account-entry": entries
-		});
+		res.render("edit-user", user)
 	}
 	catch(error) {
 		console.log("Could not retrieve entries: ", error); 
