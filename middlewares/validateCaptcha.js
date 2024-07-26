@@ -1,3 +1,9 @@
+const logger = require('../middlewares/logger');
+
+const moment = require('moment-timezone');
+const timezone = moment.tz.guess();
+
+const timestamp = moment().tz(timezone).format();
 const fs = require('fs')
 
 function validateCaptcha(req, res, next) {
@@ -10,10 +16,31 @@ function validateCaptcha(req, res, next) {
             req.session.lockedOut = true;
             req.session.lockoutTime = new Date().getTime();
             req.flash('error_msg', 'You have tried 3 times. You are now locked out for 1 minute.');
+            logger.log({
+                user: "",
+                timestamp: timestamp,
+                action: "REGISTER",
+                targetPost: "",
+                targetUser: "",
+                result: "ERROR",
+                message: "CAPTCHA Failed - Locked Out",
+                ip: req.ip
+            });
         }
         else {
             req.flash('error_msg', 'CAPTCHA verification failed. Please try again.');
             req.session.failedAttempts++; // Increment failed attempts count
+
+            logger.log({
+                user: "",
+                timestamp: timestamp,
+                action: "REGISTER",
+                targetPost: "",
+                targetUser: "",
+                result: "ERROR",
+                message: "CAPTCHA Failed",
+                ip: req.ip
+            });
         }
 
         fs.unlink(req.file.path, (err) => {
@@ -52,6 +79,18 @@ function trackFailedAttempts(req, res, next) {
         } else {
             // User is still locked out
             req.flash('error_msg', 'You are currently locked out. Please try again later.');
+            
+            logger.log({
+                user: "",
+                timestamp: timestamp,
+                action: "REGISTER",
+                targetPost: "",
+                targetUser: "",
+                result: "ERROR",
+                message: "CAPTCHA Failed - Locked Out",
+                ip: req.ip
+            });
+            
             return res.redirect('/signup');
         }
     }

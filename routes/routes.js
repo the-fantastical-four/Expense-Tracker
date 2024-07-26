@@ -6,8 +6,11 @@ const svgCaptcha = require('svg-captcha');
 const { validateCaptcha, trackFailedAttempts } = require('../middlewares/validateCaptcha.js');
 const controller = require("../controllers/controller");
 const userController = require('../controllers/userController');
+const logger = require('../middlewares/logger');
 
 const { antiBruteForce, isBlacklisted } = require('../middlewares/antiBruteForce');
+const fs = require('fs');
+const path = require('path');
 const errorHandler = require('../middlewares/errorHandler.js')
 
 
