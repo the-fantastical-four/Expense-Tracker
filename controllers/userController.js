@@ -285,7 +285,6 @@ exports.getUser = async function (req, res, next) {
 	try {
         const userId = req.query.id;
         const [user] = await userModel.getAccountEntry(userId);
-        console.log([user]);
         res.render("view-user", user);
     } catch (error) {
 		next(error);
@@ -349,7 +348,7 @@ exports.deleteUser = async function (req, res, next) {
 		if (userId === adminUserId) {
 			throw new Error('Unauthorized access');
 		}
-		
+
 		await userModel.deleteUser(userId);
 
 		logger.log({
