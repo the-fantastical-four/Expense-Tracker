@@ -7,7 +7,6 @@ $(document).ready(function() {
 
     // format amount to add commas 
     var unformattedAmount = parseFloat($("#amount").text());
-    console.log(unformattedAmount);
 
     $("#amount").text(numberWithCommas("P " + unformattedAmount.toFixed(2)));
 

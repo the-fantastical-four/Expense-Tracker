@@ -17,13 +17,13 @@ const fs = require('fs');
 function deleteFile(filePath) {
 	fs.unlink(filePath, (err) => {
 		if (err) {
-			console.error('Failed to delete invalid file');
+      next(error);
 		}
 	});
 }
 
 
-exports.registerUser = async (req, res) => {
+exports.registerUser = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (errors.isEmpty()) {
@@ -40,23 +40,10 @@ exports.registerUser = async (req, res) => {
 			emailExists = await userModel.checkEmailExists(email); 
 
 			if (emailExists) {
-				console.log('Email already in use.');
 				req.flash(
 					"error_msg",
 					"Email already in use"
 				);
-
-				await logger.log({
-					user: "",
-					timestamp: timestamp,
-					action: "REGISTER",
-					targetPost: "",
-					targetUser: "",
-					result: "ERROR",
-					message: "Email already in use",
-					ip: req.ip
-				});
-
 				return res.redirect("/signup")
 			} else {
 
@@ -89,7 +76,6 @@ exports.registerUser = async (req, res) => {
 						return res.redirect('/signup');
 					}
 				} else { 
-					console.error('Error: No file uploaded');
 					req.flash(
 						"error_msg",
 						"Please upload an image"
@@ -111,21 +97,7 @@ exports.registerUser = async (req, res) => {
 
 				bcrypt.hash(password, saltRounds, async function(err, hashed) {
 					if (err) {
-						console.error(err);
-						req.flash("error_msg", "Could not create user. Please try again.");
-
-						await logger.log({
-							user: "",
-							timestamp: timestamp,
-							action: "REGISTER",
-							targetPost: "",
-							targetUser: "",
-							result: "ERROR",
-							message: err,
-							ip: req.ip
-						});
-
-						return res.redirect("/signup"); // Return here to prevent further execution
+            next(err)
 					}
 
 					updatedPath = filePath.replace(/^public\\/, "");
@@ -160,23 +132,7 @@ exports.registerUser = async (req, res) => {
 			}
 		}
 		catch (err) {
-			console.error(err); 
-			req.flash("error_msg", "Could not create user. Please try again.");
-
-			await logger.log({
-				user: "",
-				timestamp: timestamp,
-				action: "REGISTER",
-				targetPost: "",
-				targetUser: "",
-				result: "ERROR",
-				message: err,
-				ip: req.ip
-			});
-
-			return res.redirect("/signup");
-
-			// if fail maybe delete from auth table if new user was inserted 
+      next(err)
 		}
 	} else {
 		const messages = errors.array().map((item) => item.msg);
@@ -201,7 +157,7 @@ exports.registerUser = async (req, res) => {
 	}
 };
 
-exports.loginUser = async (req, res) => {
+exports.loginUser = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	try {
@@ -223,81 +179,28 @@ exports.loginUser = async (req, res) => {
 						req.session.role = role;
 
 						handleSuccessfulLogin(email);
-
-						console.log("Log in success")
-
-						await logger.log({
-							user: id,
-							timestamp: timestamp,
-							action: "LOGIN",
-							targetPost: "",
-							targetUser: "",
-							result: "OK",
-							message: "User logged in successfully",
-							ip: req.ip
-						});
-
-
 						res.redirect("/")
 					}
 					else {
 						handleFailedLogin(email, req, res);
-						req.flash("error_msg", "Login credentials don't match");
-
-						await logger.log({
-							user: "",
-							timestamp: timestamp,
-							action: "LOGIN",
-							targetPost: "",
-							targetUser: "",
-							result: "ERROR",
-							message: "Login Failed - Login credentials don't match",
-							ip: req.ip
-						});
-
+            req.flash("error_msg", "Email and/or password does not match");
 						return res.redirect("/login");
 					}
 				});
 			} else {
-				console.log("User does not exist");
-				req.flash('error_msg', 'User does not exist');
-
-				await logger.log({
-					user: "",
-					timestamp: timestamp,
-					action: "LOGIN",
-					targetPost: "",
-					targetUser: "",
-					result: "ERROR",
-					message: "Login Failed - User does not exist",
-					ip: req.ip
-				});
-
-
+        req.flash('error_msg', 'Email and/or password does not match');
 				res.redirect("/login");
 			}
 		}
 		else {
-			console.error(errors); 
+			const messages = errors.array().map((item) => item.msg);
+			req.flash('error_msg', messages); 
+			res.redirect("/login"); 
 		}
 	}
 	catch(err) {
 		handleFailedLogin(req.body.email);
-		req.flash("error_msg", "Something happened! Please try again."); 
-		console.error("Could not log in: ", err);
-
-		await logger.log({
-			user: "",
-			timestamp: timestamp,
-			action: "LOGIN",
-			targetPost: "",
-			targetUser: "",
-			result: "ERROR",
-			message: "Login Failed",
-			ip: req.ip
-		});
-
-		res.redirect("/login"); 
+    next(err)
 	}
 };
 
@@ -339,7 +242,7 @@ exports.logoutUser = (req, res) => {
 };
 
 // TODO: Change this to actually render all account information 
-exports.viewAccounts = async (req, res) => {
+exports.viewAccounts = async (req, res, next) => {
 	try {
 		entries = await userModel.getAllAccounts();
 
@@ -349,24 +252,21 @@ exports.viewAccounts = async (req, res) => {
 		});
 	}
 	catch(error) {
-		console.log("Could not retrieve entries: ", error); 
-		res.redirect("/")
+		next(error)
 	}
 }
 
-exports.getUser = async function (req, res) {
+exports.getUser = async function (req, res, next) {
 	try {
         const userId = req.query.id;
         const [user] = await userModel.getAccountEntry(userId);
-        console.log([user]);
         res.render("view-user", user);
     } catch (error) {
-        console.log("Could not retrieve user: ", error);
-        res.redirect("/");
+		next(error)
     }
 }
 
-exports.getEditUser = async function (req, res) {
+exports.getEditUser = async function (req, res, next) {
 	try {
 		const userId = req.query.id;
 		const [user] = await userModel.getAccountEntry(userId);
@@ -405,19 +305,17 @@ exports.getEditUser = async function (req, res) {
 
 		res.render("edit-user", user)
 	} catch (error) {
-		console.log("Could not retrieve user: ", error);
-		res.redirect("/");
+		next(error)
 	}
 }
 
-exports.confirmEditUser = async function(req, res) {
+exports.confirmEditUser = async function(req, res, next) {
     var newEdits = {
         full_name: req.body.full_name,
         email: req.body.email,
         phone_number: req.body.phone_number
     }
 
-	console.log("email:", newEdits.email);
 
 	const userId = req.body.id; 
 	const adminUserId = req.session.userId;
@@ -441,27 +339,12 @@ exports.confirmEditUser = async function(req, res) {
 			redirect: redirect
 		});
     } catch (error) {
-    	console.log("Could not edit user: ", error);
-
-		logger.log({
-			user: adminUserId,
-			timestamp: timestamp,
-			action: "EDIT_USER",
-			targetPost: "",
-			targetUser: userId,
-			result: "ERROR",
-			message: `Failed to edit user with ID ${userId} by admin with ID ${adminUserId}`,
-			ip: req.ip
-		});
-
-    	res.redirect("/");
+        next(error)
     }
 }
 
-exports.deleteUser = async function (req, res) {
-	const userId = req.query.id;
-    const adminUserId = req.session.userId; // ID of the admin performing the deletion (assuming it's stored in the session)
-
+exports.deleteUser = async function (req, res, next) {
+	var userId = req.query.id;
 	try {
 		await userModel.deleteUser(userId);
 
@@ -479,19 +362,6 @@ exports.deleteUser = async function (req, res) {
 		res.redirect('/admin-panel'); 
 	}
 	catch (error) {
-		console.log("Could not delete entry: ", error); 
-
-		logger.log({
-            user: adminUserId,
-            timestamp: timestamp,
-            action: "DELETE_USER",
-            targetPost: "",
-            targetUser: userId,
-            result: "FAILED",
-            message: `Failed to delete user with ID ${userId} by admin with ID ${adminUserId}`,
-            ip: req.ip
-        });
-
-		res.redirect('/'); 
+    next(error) 
 	}
 }

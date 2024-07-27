@@ -26,7 +26,6 @@ exports.createUser = async function (data) {
         return [results]; 
     }
     catch(error) {
-        console.error(error); 
         throw error; 
     }
     finally {
@@ -48,8 +47,7 @@ exports.checkEmailExists = async function (email) {
         return results[0].num; 
     }
     catch(error) {
-        console.error(error); 
-        throw error; 
+        next(error);
     }
     finally {
         await connection.end(); 
@@ -64,8 +62,7 @@ exports.getRole = async function(id) {
         return results[0].role; 
     }
     catch (error) {
-        console.error(error); 
-        throw error; 
+        next(error);
     }
     finally {
         await connection.end; 
@@ -81,8 +78,7 @@ exports.getPass = async function(email) {
             return results[0].password;
         }
     } catch (error) {
-        console.error(error);
-        throw error;
+        next(error);
     } finally {
         await connection.end();
     }
@@ -96,7 +92,6 @@ exports.getAccountId = async function(email) {
         return results[0].user_id; 
     }
     catch(error) {
-        console.log(error); 
         throw error; 
     }
     finally {
@@ -115,7 +110,6 @@ exports.getAccountEntry = async function(user_id) {
         return results; 
     }
     catch(error) {
-        console.log(error); 
         throw error; 
     }
     finally {
@@ -131,7 +125,6 @@ exports.getAllAccounts = async function() {
         const [results] = await connection.query('SELECT * FROM accounts');
         return results;
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();
@@ -152,7 +145,6 @@ exports.blacklistIp = async function(ipAddress) {
         const [results] = await connection.query(sql, values);
         return results[0];
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();
@@ -171,8 +163,7 @@ exports.isBlacklisted = async function(ipAddress) {
         const [results] = await connection.query(sql, [ipAddress]);
         return results[0].num;
     } catch (error) {
-        console.error(error);
-        throw error;
+        next(error);
     } finally {
         await connection.end();
     }
@@ -192,7 +183,6 @@ exports.editUser = async function(user_id, edits) {
         const [results] = await connection.query(sql, values);
         return results;
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();
@@ -206,7 +196,6 @@ exports.deleteUser = async function(user_id) {
         const [results] = await connection.query('DELETE FROM accounts WHERE user_id = ?', [user_id]);
         return results;
     } catch (error) {
-        console.log(error);
         throw error;
     } finally {
         await connection.end();
