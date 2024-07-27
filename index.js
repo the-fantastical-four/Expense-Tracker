@@ -5,6 +5,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const MySQLStore = require('express-mysql-session')(session); 
+const helmet = require('helmet');
 
 const router = require("./routes/routes")
 
@@ -59,6 +60,12 @@ app.use(session({
     }, // Set to true in production if using HTTPS 
     store: sessionStore,
 }));
+
+app.use(
+    helmet({
+        xssFilter: true
+    })
+);
 
 //FLASH
 app.use(flash());
