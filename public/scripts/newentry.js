@@ -105,8 +105,6 @@ $(document).ready(function() {
                 notes: sanitizeInput(notes.val())
             }
 
-            alert(newEntry.description);
-
             $.post('add-entry', newEntry, function(response) {
                 if (response.redirect) {
                     window.location.href = response.redirect;
