@@ -316,9 +316,12 @@ exports.confirmEditUser = async function(req, res, next) {
         phone_number: req.body.phone_number
     }
 
-
 	const userId = req.body.id; 
 	const adminUserId = req.session.userId;
+
+	if(userId === adminUserId) {
+		throw new Error('Unauthorized access'); 
+	}
 
     try {
     	await userModel.editUser(userId, newEdits);
