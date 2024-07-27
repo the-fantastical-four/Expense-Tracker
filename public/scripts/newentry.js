@@ -41,14 +41,14 @@ $(document).ready(function() {
             setDefault(description);
         }
 
-        // check notes
-        if(notes.val() == "") {
-            setError(notes);
-            isValid = false;
-        }
-        else {
-            setDefault(notes);
-        }
+        // // check notes
+        // if(notes.val() == "") {
+        //     setError(notes);
+        //     isValid = false;
+        // }
+        // else {
+        //     setDefault(notes);
+        // }
 
         // check category
         if(category.val() == "") {
@@ -67,12 +67,14 @@ $(document).ready(function() {
         else {
             setDefault(amount);
         }
+
         // check entry type 
         if (type.val() == "NA") {
             setError(type);
             isValid = false;
         }
-        else if (type.val() !== "Expense" && type.val() !== "Income") {
+        else if (type.val() !== "expense" && type.val() !== "income") {
+            alert(type.val());
             setError(type);
             isValid = false;
         }
@@ -83,17 +85,27 @@ $(document).ready(function() {
         return isValid; 
     }
 
+    function sanitizeInput(input) {
+        return input.replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '');
+    }
+
+    function sanitizeAmount(input) {
+        return input.replace(/<[^>]*?>/gi, '').replace(/[^\d.]/gi, ''); // Allow digits and dot for decimal values
+    }
+
     $("#confirmbtn").click(function() {
         if(validate()) {
+
             var newEntry = {
                 entryType: type.find(":selected").val(),
                 date: date.val(),
-                category: category.val(category.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '')),
-                description: description.val(description.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '')),
-                amount: amount.val(amount.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '')),
-                notes: notes.val(notes.val().replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, ''))
-
+                category: sanitizeInput(category.val()),
+                description: sanitizeInput(description.val()),
+                amount: sanitizeAmount(amount.val()),
+                notes: sanitizeInput(notes.val())
             }
+
+            alert(newEntry.description);
 
             $.post('add-entry', newEntry, function(response) {
                 if (response.redirect) {
