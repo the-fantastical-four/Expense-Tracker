@@ -2,13 +2,12 @@
 
 <section>
     <div id="infoinput">
-        <img src="/{{profile_picture}}" alt="User Image">
+        <img src="/{{profile_picture}}" alt="User Image" class="profilePic">
         <h2 id="full_name"> Name: {{full_name}} </h2><br>
         <text id="email"> Email: {{email}} </text><br>
         <text id="phone_number"> Phone: {{phone_number}} </text>
     </div>
     <div id="buttons">
-        {{!-- BUTTONS NOT WORKING --}}
         
         <button id="editbtn" onclick="location.href='/edit/user?id={{user_id}}'">Edit</button>
         <button id="deletebtn" onclick="location.href='/delete/user?id={{user_id}}'">Delete</button>

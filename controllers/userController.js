@@ -277,20 +277,18 @@ exports.getEditUser = async function (req, res, next) {
 		res.render("edit-user", user)
 	}
 	catch(error) {
-		console.log("Could not retrieve entries: ", error); 
-		res.redirect("/")
+		next(error); 
 	}
 }
 
-exports.getUser = async function (req, res) {
+exports.getUser = async function (req, res, next) {
 	try {
         const userId = req.query.id;
         const [user] = await userModel.getAccountEntry(userId);
         console.log([user]);
         res.render("view-user", user);
     } catch (error) {
-        console.log("Could not retrieve user: ", error);
-        res.redirect("/");
+		next(error);
     }
 }
 
@@ -319,10 +317,6 @@ exports.confirmEditUser = async function(req, res, next) {
 	const userId = req.body.id; 
 	const adminUserId = req.session.userId;
 
-	if(userId === adminUserId) {
-		throw new Error('Unauthorized access'); 
-	}
-
     try {
     	await userModel.editUser(userId, newEdits);
 		const redirect = '/view/user?id=' + userId;
@@ -347,8 +341,15 @@ exports.confirmEditUser = async function(req, res, next) {
 }
 
 exports.deleteUser = async function (req, res, next) {
-	var userId = req.query.id;
+	const userId = req.query.id;
+	const adminUserId = req.query.id; 
+
 	try {
+
+		if (userId === adminUserId) {
+			throw new Error('Unauthorized access');
+		}
+		
 		await userModel.deleteUser(userId);
 
 		logger.log({
@@ -365,6 +366,6 @@ exports.deleteUser = async function (req, res, next) {
 		res.redirect('/admin-panel'); 
 	}
 	catch (error) {
-    next(error) 
+    	next(error) 
 	}
 }
