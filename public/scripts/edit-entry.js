@@ -107,4 +107,8 @@ $(document).ready(function() {
 
     })
 
+    $('#cancelbtn').on('click', function () {
+        history.back();
+    });
+
 });

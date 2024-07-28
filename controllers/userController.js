@@ -341,7 +341,7 @@ exports.confirmEditUser = async function(req, res, next) {
 
 exports.deleteUser = async function (req, res, next) {
 	const userId = req.query.id;
-	const adminUserId = req.query.id; 
+	const adminUserId = req.session.userId; 
 
 	try {
 

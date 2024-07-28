@@ -1,4 +1,15 @@
 $(document).ready(function() {
+
+    $('#editbtn').on('click', function () {
+        const href = $(this).data('href');
+        window.location.href = href;
+    });
+
+    $('#deletebtn').on('click', function () {
+        const href = $(this).data('href');
+        window.location.href = href;
+    });
+
     function numberWithCommas(number) {
         // regex formula from
         // https://www.delftstack.com/howto/javascript/javascript-add-commas-to-number/

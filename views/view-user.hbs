@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/css/viewentrystyle.css">
+<script nonce="{{nonce}}" src="/scripts/view-entry.js"></script>
 
 <section>
     <div id="infoinput">
@@ -9,8 +10,8 @@
     </div>
     <div id="buttons">
         
-        <button id="editbtn" onclick="location.href='/edit/user?id={{user_id}}'">Edit</button>
-        <button id="deletebtn" onclick="location.href='/delete/user?id={{user_id}}'">Delete</button>
+        <button id="editbtn" data-href="/edit/user?id={{user_id}}">Edit</button>
+        <button id="deletebtn" data-href="/delete/user?id={{user_id}}">Delete</button>
 
     </div>
 </section>

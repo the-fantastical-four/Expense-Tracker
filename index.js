@@ -22,6 +22,7 @@ const {
     sessionKey
 } = require('./config');
 
+const crypto = require('crypto');
 const mysql = require('mysql2'); 
 const connection = mysql.createConnection(dbConfig); 
 const sessionStore = new MySQLStore({}, connection); 
@@ -61,9 +62,24 @@ app.use(session({
     store: sessionStore,
 }));
 
+app.use((req, res, next) => {
+    const nonce = crypto.randomBytes(16).toString('base64');
+    res.locals.nonce = nonce; 
+    next();
+});
+
 app.use(
     helmet({
-        xssFilter: true
+        contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.nonce}'`],
+                    objectSrc: ["'none'"],
+                    fontSrc: ["'self'", "https:", "data:"], // Adjust font sources if necessary
+                    upgradeInsecureRequests: []
+                }
+            },
+            xssFilter: true
     })
 );
 
