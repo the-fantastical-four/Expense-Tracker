@@ -179,11 +179,35 @@ exports.loginUser = async (req, res, next) => {
 						req.session.role = role;
 
 						handleSuccessfulLogin(email);
+
+						await logger.log({
+							user: id,
+							timestamp: timestamp,
+							action: "LOGIN",
+							targetPost: "",
+							targetUser: "",
+							result: "OK",
+							message: "User logged in successfully",
+							ip: req.ip
+						});
+
 						res.redirect("/")
 					}
 					else {
 						handleFailedLogin(email, req, res);
-            req.flash("error_msg", "Email and/or password does not match");
+            			req.flash("error_msg", "Email and/or password does not match");
+
+						await logger.log({
+							user: "",
+							timestamp: timestamp,
+							action: "LOGIN",
+							targetPost: "",
+							targetUser: "",
+							result: "ERROR",
+							message: "Login Failed - Login credentials don't match",
+							ip: req.ip
+						});
+
 						return res.redirect("/login");
 					}
 				});
@@ -195,6 +219,18 @@ exports.loginUser = async (req, res, next) => {
 		else {
 			const messages = errors.array().map((item) => item.msg);
 			req.flash('error_msg', messages); 
+
+			await logger.log({
+				user: "",
+				timestamp: timestamp,
+				action: "LOGIN",
+				targetPost: "",
+				targetUser: "",
+				result: "ERROR",
+				message: "Login Failed - User does not exist",
+				ip: req.ip
+			});
+
 			res.redirect("/login"); 
 		}
 	}

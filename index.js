@@ -25,7 +25,11 @@ const {
 const crypto = require('crypto');
 const mysql = require('mysql2'); 
 const connection = mysql.createConnection(dbConfig); 
-const sessionStore = new MySQLStore({}, connection); 
+const sessionStore = new MySQLStore({
+    clearExpired: true, // Enable automatic cleanup of expired sessions
+    checkExpirationInterval: 60000, // How frequently expired sessions will be cleared; here it's set to 15 minutes
+    expiration: 60000 
+}, connection);
 
 const options = {
     key: fs.readFileSync(path.join(__dirname, 'certs', 'server.key')),
@@ -57,7 +61,7 @@ app.use(session({
         secure: true, // basically makes cookies secure, only turn on if HTTPS!!! 
         httpOnly: true, // prevent client-side JavaScript from accessing the cookie
         sameSite: 'strict', // helps protect against CSRF attacks
-        maxAge: 60 * 10000 // 1 min
+        maxAge: 60 * 1000 // 1 min
     }, // Set to true in production if using HTTPS 
     store: sessionStore,
 }));

@@ -37,7 +37,7 @@ class Logger {
         }
     }
 
-    async logRequest(req, res) {
+    async logRequest(req, res, next) {
         const logEntry = req.body;
         const logFilePath = path.join(__dirname, '../logs.json');
 
@@ -54,8 +54,8 @@ class Logger {
             fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2));
             res.status(200).send('Log saved');
         } catch (error) {
-            console.error(error);
             res.status(500).send('Server error');
+            next(error); 
         }
     }
 }
