@@ -69,6 +69,12 @@ $(document).ready(function() {
             username: $("#username").val()
         }
 
-
+        $.post("/edit/confirm-user", edits, function (response) {
+            if (response.redirect) {
+                window.location.href = response.redirect;
+            } else {
+                $('body').html(response);
+            }
+        });
     });
 });

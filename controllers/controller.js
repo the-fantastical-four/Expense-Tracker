@@ -82,7 +82,7 @@ exports.addEntry = async function(req, res, next) {
             ip: req.ip
         });
 		const redirect = '/'; 
-		return res.json({
+		return res.json({	
 			redirect: redirect
 		});
 	} catch(error) {

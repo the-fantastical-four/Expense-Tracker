@@ -11,11 +11,14 @@ const certPath = path.join(certsDir, 'server.crt');
 // Function to generate certificates
 function generateCertificates() {
   // Attributes for the certificate (common name)
-  const attrs = [{ name: 'commonName', value: 'localhost' }];
+  const attrs = [{
+    name: 'commonName',
+    value: 'localhost'
+  }];
   // Generate self-signed certificate and key pair
   const pems = selfsigned.generate(attrs, {
     keySize: 2048, // the size for the private key in bits
-    days: 90, // expiry period for the signed certificate
+    days: 365, // expiry period for the signed certificate
     algorithm: 'sha256', // signing algorithm
   });
 
