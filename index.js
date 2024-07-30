@@ -5,6 +5,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const MySQLStore = require('express-mysql-session')(session); 
+const helmet = require('helmet');
 
 const router = require("./routes/routes")
 
@@ -21,6 +22,7 @@ const {
     sessionKey
 } = require('./config');
 
+const crypto = require('crypto');
 const mysql = require('mysql2'); 
 const connection = mysql.createConnection(dbConfig); 
 const sessionStore = new MySQLStore({}, connection); 
@@ -59,6 +61,27 @@ app.use(session({
     }, // Set to true in production if using HTTPS 
     store: sessionStore,
 }));
+
+app.use((req, res, next) => {
+    const nonce = crypto.randomBytes(16).toString('base64');
+    res.locals.nonce = nonce; 
+    next();
+});
+
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.nonce}'`],
+                    objectSrc: ["'none'"],
+                    fontSrc: ["'self'", "https:", "data:"], // Adjust font sources if necessary
+                    upgradeInsecureRequests: []
+                }
+            },
+            xssFilter: true
+    })
+);
 
 //FLASH
 app.use(flash());

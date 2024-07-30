@@ -100,3 +100,7 @@ input:focus {
 #editbtn {
     background-color: var(--primary-color);
 }
+
+.profilePic {
+    width: 50%; 
+}

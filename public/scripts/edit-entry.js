@@ -55,6 +55,11 @@ $(document).ready(function() {
             setError(type);
             isValid = false;
         }
+        else if (type.val() !== "expense" && type.val() !== "income") {
+            alert(type.val());
+            setError(type);
+            isValid = false;
+        }
         else {
             setDefault(type);
         }
@@ -66,6 +71,14 @@ $(document).ready(function() {
         var urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(param);
     }
+
+    function sanitizeInput(input) {
+        return input.replace(/<[^>]*?>/gi, '').replace(/[^\w\s]/gi, '');
+    }
+
+    function sanitizeAmount(input) {
+        return input.replace(/<[^>]*?>/gi, '').replace(/[^\d.]/gi, ''); // Allow digits and dot for decimal values
+    }
     
     $("#confirmbtn").click(function() {
         if (validate()) {
@@ -75,10 +88,10 @@ $(document).ready(function() {
             var edits = {
                 entryType: type.find(":selected").val(),
                 date: date.val(),
-                category: category.val(),
-                description: description.val(),
-                amount: amount.val(),
-                notes: notes.val(),
+                category: sanitizeInput(category.val()),
+                description: sanitizeInput(description.val()),
+                amount: sanitizeAmount(amount.val()),
+                notes: sanitizeInput(notes.val()), 
                 id: queryId
             }
 
@@ -93,5 +106,9 @@ $(document).ready(function() {
         }
 
     })
+
+    $('#cancelbtn').on('click', function () {
+        history.back();
+    });
 
 });

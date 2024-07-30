@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/css/viewentrystyle.css">
-<script src="/scripts/view-entry.js"></script>
+<script nonce="{{nonce}}" src="/scripts/view-entry.js"></script>
 
 <section>
     <div id="type">
@@ -21,7 +21,7 @@
     </div>
     <div id="buttons">
         {{!-- BUTTONS NOT WORKING --}}
-        <button id="editbtn" onclick="location.href='/edit/entry?id={{post_id}}'">Edit</button>
-        <button id="deletebtn" onclick="location.href='/delete/entry?id={{post_id}}'">Delete</button>
+        <button id="editbtn" data-href="/edit/entry?id={{post_id}}">Edit</button>
+        <button id="deletebtn" data-href="/delete/entry?id={{post_id}}">Delete</button>
     </div>
 </section>

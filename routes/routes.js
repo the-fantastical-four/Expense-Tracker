@@ -30,6 +30,8 @@ router.get('/captcha', (req, res) => {
     res.status(200).send(captcha.data);
 });
 
+router.post('/log', logger.logRequest, errorHandler);
+
 router.get('/', isPrivate, controller.getAllEntries, errorHandler);
 router.get('/error', controller.errors);
 router.get('/login', isPublic, controller.login);

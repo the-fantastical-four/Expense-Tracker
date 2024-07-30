@@ -1,9 +1,9 @@
 <link rel="stylesheet" href="/css/editentrystyle.css">
-<script src="/scripts/edit-user.js"></script>
+<script nonce="{{nonce}}" src="/scripts/edit-user.js"></script>
 
 <section>
     <div id="infoinput">
-        <img src="/{{profile_picture}}" alt="User Image"><br>
+        <img src="/{{profile_picture}}" alt="User Image" class="profilePic"><br>
         <h2>Name:</h2>
         <input id="full_name" name="full_name" type="text" value="{{full_name}}" placeholder="Name"><br>
         <div id="full_name_error" display="none" class="error-message"></div><br>
@@ -19,6 +19,6 @@
    
     <div id="buttons">
         <button id="confirmbtn" value="{{user_id}}" type="button">Confirm</button>
-        <button id="cancelbtn" onclick="history.back()">Cancel</button>
+        <button id="cancelbtn">Cancel</button>
     </div>
 </section>
