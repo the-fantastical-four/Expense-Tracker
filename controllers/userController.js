@@ -384,21 +384,22 @@ exports.deleteUser = async function (req, res, next) {
 		if (userId === adminUserId) {
 			throw new Error('Unauthorized access');
 		}
+		else {
+			await userModel.deleteUser(userId);
 
-		await userModel.deleteUser(userId);
+			logger.log({
+				user: adminUserId,
+				timestamp: timestamp,
+				action: "DELETE_USER",
+				targetPost: "",
+				targetUser: userId,
+				result: "SUCCESS",
+				message: `User with ID ${userId} was successfully deleted by admin with ID ${adminUserId}`,
+				ip: req.ip
+			});
 
-		logger.log({
-			user: adminUserId,
-			timestamp: timestamp,
-			action: "DELETE_USER",
-			targetPost: "",
-			targetUser: userId,
-			result: "SUCCESS",
-			message: `User with ID ${userId} was successfully deleted by admin with ID ${adminUserId}`,
-			ip: req.ip
-		});
-    
-		res.redirect('/admin-panel'); 
+			res.redirect('/admin-panel');
+		}
 	}
 	catch (error) {
     	next(error) 
